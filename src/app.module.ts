@@ -6,6 +6,8 @@ import { ReferencesModule } from './references/references.module';
 import { Reference } from './entities/reference.entity';
 import { Module as CourseModule } from './entities/module.entity';
 import { Lesson } from './entities/lesson.entity';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -16,10 +18,11 @@ import { Lesson } from './entities/lesson.entity';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_DATABASE || 'skillcert',
-      entities: [Reference, CourseModule, Lesson],
+      entities: [Reference, CourseModule, Lesson, User],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
     ReferencesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
