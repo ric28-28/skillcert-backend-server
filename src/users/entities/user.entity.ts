@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm"
+import { Course } from "../../courses/entities/course.entity"
 
 export enum UserRole {
   ADMIN = "admin",
@@ -26,6 +27,9 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole
+
+  @OneToMany(() => Course, course => course.professor)
+  courses: Course[]
 
   @CreateDateColumn()
   createdAt: Date
