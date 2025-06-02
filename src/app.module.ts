@@ -9,11 +9,10 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { databaseConfig } from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { QuizModule } from './quiz/quiz.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(databaseConfig),
-  ],
+  imports: [TypeOrmModule.forRoot(databaseConfig), QuizModule],
   controllers: [AppController],
   providers: [AppService],
 })
