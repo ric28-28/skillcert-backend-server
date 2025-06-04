@@ -5,7 +5,10 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { Course } from './course.entity';
 import { Lesson } from './lesson.entity';
 
 @Entity('modules')
@@ -22,10 +25,16 @@ export class Module {
   @Column({ nullable: true })
   course_id: string;
 
-  @ManyToOne('Course')
+  @ManyToOne(() => Course, (course) => course.modules)
   @JoinColumn({ name: 'course_id' })
-  course: any;
+  course: Course;
 
   @OneToMany(() => Lesson, (lesson) => lesson.module)
   lessons: Lesson[];
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
