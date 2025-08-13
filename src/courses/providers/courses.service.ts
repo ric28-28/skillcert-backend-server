@@ -5,12 +5,14 @@ import { CoursesRepository } from "../courses.repository"
 import { UpdateCourseDto } from "../dto/update-course.dto"
 import { UsersService } from "../../users/providers/users.service"
 import { UserRole } from "../../users/entities/user.entity"
+import { CategoriesService } from "../../categories/categories.service"
 
 @Injectable()
 export class CoursesService {
     constructor(
         private readonly coursesRepository: CoursesRepository,
         private readonly usersService: UsersService,
+        private readonly categoriesService: CategoriesService,
     ) { }
 
     async create(createCourseDto: CreateCourseDto): Promise<Course> {
@@ -18,6 +20,11 @@ export class CoursesService {
         const professor = await this.usersService.findById(createCourseDto.professorId)
         if (professor.role !== UserRole.MODERATOR && professor.role !== UserRole.ADMIN) {
             throw new BadRequestException("Only moderators and admins can be assigned as professors")
+        }
+
+        // Validate category if provided
+        if (createCourseDto.categoryId) {
+            await this.categoriesService.findById(createCourseDto.categoryId)
         }
 
         // Check if course title already exists
@@ -84,6 +91,11 @@ export class CoursesService {
             }
         }
 
+        // If category is being updated, validate the new category
+        if (updateCourseDto.categoryId) {
+            await this.categoriesService.findById(updateCourseDto.categoryId)
+        }
+
         // Check if title is being updated and if it already exists
         if (updateCourseDto.title) {
             const titleExists = await this.coursesRepository.titleExists(updateCourseDto.title, id)
@@ -135,5 +147,16 @@ export class CoursesService {
         }
 
         return course
+    }
+
+    async findByCategoryId(categoryId: string): Promise<Course[]> {
+        if (!categoryId) {
+            throw new BadRequestException("Category ID is required")
+        }
+
+        // Validate that the category exists
+        await this.categoriesService.findById(categoryId)
+
+        return await this.coursesRepository.findByCategoryId(categoryId)
     }
 }
