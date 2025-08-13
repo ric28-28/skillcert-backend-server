@@ -10,7 +10,6 @@ import { Course } from './entities/course.entity';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { databaseConfig } from './config/database.config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuizModule } from './quiz/quiz.module';
 import { CoursesModule } from './courses/courses.module';
 import { ModulesModule } from './modules/modules.module';
@@ -25,7 +24,7 @@ import { LessonsModule } from './lessons/lessons.module';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_DATABASE || 'skillcert',
-      entities: [Reference, CourseModule, Lesson, Course, User],
+      entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
     ReferencesModule,
@@ -37,4 +36,4 @@ import { LessonsModule } from './lessons/lessons.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
