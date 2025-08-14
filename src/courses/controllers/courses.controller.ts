@@ -113,6 +113,21 @@ export class CoursesController {
     };
   }
 
+  @Get('category/:categoryId')
+  @HttpCode(HttpStatus.OK)
+  async findByCategoryId(@Param('categoryId') categoryId: string): Promise<{
+    message: string;
+    data: Course[];
+    count: number;
+  }> {
+    const courses = await this.coursesService.findByCategoryId(categoryId);
+    return {
+      message: 'Category courses retrieved successfully',
+      data: courses,
+      count: courses.length,
+    };
+  }
+
   @Get('professor/:professorId/:id')
   @HttpCode(HttpStatus.OK)
   async findByIdAndProfessor(

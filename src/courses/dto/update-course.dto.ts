@@ -15,4 +15,9 @@ export class UpdateCourseDto {
     @IsString()
     @IsUUID()
     professorId?: string
+
+    @IsOptional()
+    @IsString()
+    @IsUUID()
+    categoryId?: string
 }

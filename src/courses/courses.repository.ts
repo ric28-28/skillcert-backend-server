@@ -19,18 +19,24 @@ export class CoursesRepository {
 
     async findAll(): Promise<Course[]> {
         return await this.courseRepository.find({
-            relations: ["professor"],
+            relations: ["professor", "category"],
             select: {
                 id: true,
                 title: true,
                 description: true,
                 professorId: true,
+                categoryId: true,
                 createdAt: true,
                 updatedAt: true,
                 professor: {
                     id: true,
                     name: true,
                     email: true,
+                },
+                category: {
+                    id: true,
+                    name: true,
+                    color: true,
                 },
             },
         })
@@ -39,18 +45,24 @@ export class CoursesRepository {
     async findByProfessorId(professorId: string): Promise<Course[]> {
         return await this.courseRepository.find({
             where: { professorId },
-            relations: ["professor"],
+            relations: ["professor", "category"],
             select: {
                 id: true,
                 title: true,
                 description: true,
                 professorId: true,
+                categoryId: true,
                 createdAt: true,
                 updatedAt: true,
                 professor: {
                     id: true,
                     name: true,
                     email: true,
+                },
+                category: {
+                    id: true,
+                    name: true,
+                    color: true,
                 },
             },
         })
@@ -59,18 +71,24 @@ export class CoursesRepository {
     async findById(id: string): Promise<Course | null> {
         return await this.courseRepository.findOne({
             where: { id },
-            relations: ["professor"],
+            relations: ["professor", "category"],
             select: {
                 id: true,
                 title: true,
                 description: true,
                 professorId: true,
+                categoryId: true,
                 createdAt: true,
                 updatedAt: true,
                 professor: {
                     id: true,
                     name: true,
                     email: true,
+                },
+                category: {
+                    id: true,
+                    name: true,
+                    color: true,
                 },
             },
         })
@@ -94,18 +112,24 @@ export class CoursesRepository {
     async findByIdAndProfessor(id: string, professorId: string): Promise<Course | null> {
         return await this.courseRepository.findOne({
             where: { id, professorId },
-            relations: ["professor"],
+            relations: ["professor", "category"],
             select: {
                 id: true,
                 title: true,
                 description: true,
                 professorId: true,
+                categoryId: true,
                 createdAt: true,
                 updatedAt: true,
                 professor: {
                     id: true,
                     name: true,
                     email: true,
+                },
+                category: {
+                    id: true,
+                    name: true,
+                    color: true,
                 },
             },
         })
@@ -120,5 +144,31 @@ export class CoursesRepository {
 
         const count = await query.getCount()
         return count > 0
+    }
+
+    async findByCategoryId(categoryId: string): Promise<Course[]> {
+        return await this.courseRepository.find({
+            where: { categoryId },
+            relations: ["professor", "category"],
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                professorId: true,
+                categoryId: true,
+                createdAt: true,
+                updatedAt: true,
+                professor: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+                category: {
+                    id: true,
+                    name: true,
+                    color: true,
+                },
+            },
+        })
     }
 }

@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm"
 import { User } from "../../users/entities/user.entity"
+import { Category } from "../../entities/category.entity"
 
 @Entity("courses")
 export class Course {
@@ -18,6 +19,13 @@ export class Course {
     @ManyToOne(() => User, { eager: true })
     @JoinColumn({ name: "professorId" })
     professor: User
+
+    @Column({ type: "uuid", nullable: true })
+    categoryId: string
+
+    @ManyToOne(() => Category, { eager: true })
+    @JoinColumn({ name: "categoryId" })
+    category: Category
 
     @CreateDateColumn()
     createdAt: Date
