@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Reference } from './reference.entity';
 import { Module } from './module.entity';
+import { LessonResource } from './lesson-resource.entity';
 
 export enum LessonType {
   TEXT = 'text',
@@ -44,6 +45,9 @@ export class Lesson {
 
   @OneToMany(() => Reference, (reference) => reference.lesson)
   references: Reference[];
+
+  @OneToMany(() => LessonResource, (resource) => resource.lesson)
+  resources: LessonResource[];
 
   @CreateDateColumn()
   created_at: Date;
