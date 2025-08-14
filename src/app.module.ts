@@ -2,19 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ReferencesModule } from './references/references.module';
-import { Reference } from './entities/reference.entity';
-import { Module as CourseModule } from './entities/module.entity';
-import { Lesson } from './entities/lesson.entity';
-import { Course } from './entities/course.entity';
-import { UsersModule } from './users/users.module';
-import { User } from './users/entities/user.entity';
-import { databaseConfig } from './config/database.config';
-import { QuizModule } from './quiz/quiz.module';
-import { CoursesModule } from './courses/courses.module';
-import { ModulesModule } from './modules/modules.module';
-import { LessonsModule } from './lessons/lessons.module';
 import { CategoriesModule } from './categories/categories.module';
+import { CoursesModule } from './courses/courses.module';
+import { LessonResourcesModule } from './lesson-resources/lesson-resources.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { ModulesModule } from './modules/modules.module';
+import { ReferencesModule } from './references/references.module';
+import { StorageModule } from './storage/storage.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -34,8 +29,10 @@ import { CategoriesModule } from './categories/categories.module';
     ModulesModule,
     LessonsModule,
     CategoriesModule,
+    LessonResourcesModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

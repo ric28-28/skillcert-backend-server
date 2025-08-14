@@ -22,14 +22,14 @@ export class LessonsService {
 
   async findAll(): Promise<Lesson[]> {
     return await this.lessonRepository.find({
-      relations: ['module', 'references'],
+      relations: ['module', 'references', 'resources'],
     });
   }
 
   async findOne(id: string): Promise<Lesson> {
     const lesson = await this.lessonRepository.findOne({
       where: { id },
-      relations: ['module', 'references'],
+      relations: ['module', 'references', 'resources'],
     });
 
     if (!lesson) {
@@ -42,7 +42,7 @@ export class LessonsService {
   async findByModule(moduleId: string): Promise<Lesson[]> {
     return await this.lessonRepository.find({
       where: { module_id: moduleId },
-      relations: ['references'],
+      relations: ['references', 'resources'],
     });
   }
 
