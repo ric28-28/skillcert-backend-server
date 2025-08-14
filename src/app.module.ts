@@ -2,18 +2,37 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ReferencesModule } from './references/references.module';
-import { Reference } from './entities/reference.entity';
-import { Module as CourseModule } from './entities/module.entity';
-import { Lesson } from './entities/lesson.entity';
-import { Course } from './entities/course.entity';
-import { UsersModule } from './users/users.module';
-import { User } from './users/entities/user.entity';
-import { databaseConfig } from './config/database.config';
-import { QuizModule } from './quiz/quiz.module';
-import { CoursesModule } from './courses/courses.module';
-import { ModulesModule } from './modules/modules.module';
-import { LessonsModule } from './lessons/lessons.module';
+import * as path from 'path';
+import * as fs from 'fs';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+
+function loadModules(): any[] {
+  const modulesDir = path.join(__dirname);
+  const moduleFiles = fs
+    .readdirSync(modulesDir, { withFileTypes: true })
+    .filter(
+      (dirent) =>
+        dirent.isDirectory() &&
+        fs.existsSync(
+          path.join(modulesDir, dirent.name, `${dirent.name}.module.js`),
+        ),
+    )
+    .map((dirent) => {
+      const modulePath = path.join(
+        modulesDir,
+        dirent.name,
+        `${dirent.name}.module.js`,
+      );
+      const imported = require(modulePath);
+      const moduleClass = Object.values(imported).find(
+        (exp: any) => typeof exp === 'function' && /Module$/.test(exp.name),
+      );
+      return moduleClass;
+    })
+    .filter(Boolean);
+
+  return moduleFiles;
+}
 
 @Module({
   imports: [
@@ -26,14 +45,11 @@ import { LessonsModule } from './lessons/lessons.module';
       database: process.env.DB_DATABASE || 'skillcert',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
+      namingStrategy: new SnakeNamingStrategy(),
     }),
-    ReferencesModule,
-    UsersModule,
-    CoursesModule,
-    ModulesModule,
-    LessonsModule,
+    ...loadModules(),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
