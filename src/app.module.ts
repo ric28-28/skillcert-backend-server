@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
-function loadModules(): any[] {
+function loadModules(): (new () => any)[] {
   const modulesDir = path.join(__dirname);
   const moduleFiles = fs
     .readdirSync(modulesDir, { withFileTypes: true })
@@ -23,11 +23,14 @@ function loadModules(): any[] {
         dirent.name,
         `${dirent.name}.module.js`,
       );
-      const imported = require(modulePath);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+      const imported = require(modulePath) as Record<string, unknown>;
       const moduleClass = Object.values(imported).find(
-        (exp: any) => typeof exp === 'function' && /Module$/.test(exp.name),
+        (exp: unknown) =>
+          typeof exp === 'function' &&
+          /Module$/.test((exp as { name?: string }).name || ''),
       );
-      return moduleClass;
+      return moduleClass as new () => any;
     })
     .filter(Boolean);
 
