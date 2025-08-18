@@ -1,10 +1,10 @@
-import { IsString, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsUrl } from 'class-validator';
 
 export class CreateReferenceDto {
   @IsString()
   title: string;
 
-  @IsString()
+  @IsUrl({}, { message: 'file_url must be a valid URL' })
   file_url: string;
 
   @IsString()

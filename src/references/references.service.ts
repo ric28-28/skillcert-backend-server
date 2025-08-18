@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Reference } from '../entities/reference.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
+import { UpdateReferenceDto } from './dto/update-reference.dto';
 
 @Injectable()
 export class ReferencesService {
@@ -47,6 +48,12 @@ export class ReferencesService {
       where: { lesson_id: lessonId },
       relations: ['module', 'lesson'],
     });
+  }
+
+  async update(id: string, updateReferenceDto: UpdateReferenceDto): Promise<Reference> {
+    const reference = await this.findOne(id);
+    Object.assign(reference, updateReferenceDto);
+    return await this.referencesRepository.save(reference);
   }
 
   async remove(id: string): Promise<void> {
