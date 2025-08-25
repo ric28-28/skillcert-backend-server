@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm"
 import { Course } from "../../courses/entities/course.entity"
 import { Review } from "src/reviews/entities/reviews.entity"
+import { Enrollment } from "../../enrollment/entities/enrollment.entity"
 
 export enum UserRole {
   ADMIN = "admin",
@@ -34,6 +35,9 @@ export class User {
 
   @OneToMany(() => Review, review => review.user)
   reviews: Review[]
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
+  enrollments: Enrollment[];
 
   @CreateDateColumn()
   createdAt: Date

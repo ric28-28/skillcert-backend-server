@@ -12,6 +12,7 @@ import { User } from '../../users/entities/user.entity';
 import { Review } from 'src/reviews/entities/reviews.entity';
 import { Module } from 'src/entities/module.entity';
 import { Category } from '../../entities/category.entity';
+import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 
 @Entity('courses')
 export class Course {
@@ -36,6 +37,9 @@ export class Course {
 
   @OneToMany(() => Review, (review) => review.course)
   reviews: Review[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
+  enrollments: Enrollment[];
 
   @Column({ type: 'uuid', nullable: true })
   categoryId: string;
