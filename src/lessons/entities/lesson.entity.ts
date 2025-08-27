@@ -8,9 +8,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { Reference } from './reference.entity';
 import { Module } from '../../modules/entities/module.entity';
-// import { LessonResource } from './lesson-resource.entity';
+import { CourseProgress } from '../../course-progress/entities/course-progress.entity';
 
 export enum LessonType {
   TEXT = 'text',
@@ -40,6 +39,11 @@ export class Lesson {
   module_id: string;
 
   @ManyToOne(() => Module, (module) => module.lessons)
+   
+@OneToMany(() => CourseProgress, (progress) => progress.lesson)
+progress: CourseProgress[];
+
+
   @JoinColumn({ name: 'module_id' })
   module: Module;
 
