@@ -20,6 +20,7 @@ export class CreateLessonResourceDto {
   description?: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsUUID()
   lesson_id: string;
 }

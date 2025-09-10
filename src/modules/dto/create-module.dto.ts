@@ -1,13 +1,16 @@
-import { IsString, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsNotEmpty } from 'class-validator';
 
 export class CreateModuleDto {
+  @IsNotEmpty()
   @IsString()
   title: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   description?: string;
 
+  @IsNotEmpty()
+  @IsString()
   @IsUUID()
   course_id: string;
 }

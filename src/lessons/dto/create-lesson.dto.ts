@@ -1,18 +1,21 @@
-import { IsString, IsOptional, IsUUID, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsEnum, IsNotEmpty } from 'class-validator';
 import { LessonType } from '../entities/lesson.entity';
 
 export class CreateLessonDto {
+  @IsNotEmpty()
   @IsString()
   title: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   content?: string;
 
-  @IsEnum(LessonType)
   @IsOptional()
+  @IsEnum(LessonType)
   type?: LessonType;
 
+  @IsNotEmpty()
+  @IsString()
   @IsUUID()
   module_id: string;
 }

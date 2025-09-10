@@ -19,6 +19,7 @@ export class CreateQuizDto {
   description?: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsUUID()
   lesson_id: string;
 
