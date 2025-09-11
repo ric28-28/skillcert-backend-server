@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +17,7 @@ import { Question } from '../question/entities/question.entity';
 import { Quiz } from './entities/quiz.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
 import { QuestionType } from '../question/entities/question.entity';
+import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 
 @Injectable()
 export class QuizService {
@@ -33,9 +35,19 @@ export class QuizService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private quizValidationService: QuizValidationService,
-  ) { }
+    @Inject(CentralizedLoggerService)
+    private readonly logger: CentralizedLoggerService,
+  ) {
+    this.logger.setContext(QuizService.name);
+  }
 
   async create(createQuizDto: CreateQuizDto): Promise<Quiz> {
+    this.logger.info('Creating new quiz', {
+      title: createQuizDto.title,
+      lessonId: createQuizDto.lesson_id,
+      questionCount: createQuizDto.questions?.length || 0,
+    });
+
     // Validate the quiz structure
     this.quizValidationService.validateQuiz(createQuizDto);
 
@@ -133,6 +145,12 @@ export class QuizService {
   }
 
   async submitQuiz(submitQuizDto: SubmitQuizDto): Promise<QuizResultDto> {
+    this.logger.info('Quiz submission started', {
+      userId: submitQuizDto.user_id,
+      quizId: submitQuizDto.quiz_id,
+      responseCount: submitQuizDto.responses?.length || 0,
+    });
+
     // Validate user exists
     const user = await this.userRepository.findOne({
       where: { id: submitQuizDto.user_id },

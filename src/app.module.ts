@@ -5,6 +5,7 @@ import * as path from 'path';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoggerModule } from './common/logger';
 
 function loadModules(): (new () => any)[] {
   const modulesDir = path.join(__dirname);
@@ -39,6 +40,7 @@ function loadModules(): (new () => any)[] {
 
 @Module({
   imports: [
+    LoggerModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
