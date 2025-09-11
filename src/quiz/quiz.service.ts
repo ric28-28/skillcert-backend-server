@@ -1,11 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Quiz } from './entities/quiz.entity';
 import { Question } from '../question/entities/question.entity';
 import { Answer } from '../answer/entities/answer.entity';
+import { QuizAttempt, AttemptStatus } from './entities/quiz-attempt.entity';
+import { UserQuestionResponse } from './entities/user-question-response.entity';
+import { User } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { SubmitQuizDto, QuestionResponseDto } from './dto/submit-quiz.dto';
+import { QuizResultDto, QuestionResultDto } from './dto/quiz-result.dto';
 import { QuizValidationService } from './services/quiz-validation.service';
+import { QuestionType } from '../question/entities/question.entity';
 
 @Injectable()
 export class QuizService {
@@ -16,8 +26,14 @@ export class QuizService {
     private questionRepository: Repository<Question>,
     @InjectRepository(Answer)
     private answerRepository: Repository<Answer>,
+    @InjectRepository(QuizAttempt)
+    private quizAttemptRepository: Repository<QuizAttempt>,
+    @InjectRepository(UserQuestionResponse)
+    private userQuestionResponseRepository: Repository<UserQuestionResponse>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private quizValidationService: QuizValidationService,
-  ) {}
+  ) { }
 
   async create(createQuizDto: CreateQuizDto): Promise<Quiz> {
     // Validate the quiz structure
@@ -114,5 +130,254 @@ export class QuizService {
 
     // Delete quiz
     await this.quizRepository.delete(id);
+  }
+
+  async submitQuiz(submitQuizDto: SubmitQuizDto): Promise<QuizResultDto> {
+    // Validate user exists
+    const user = await this.userRepository.findOne({
+      where: { id: submitQuizDto.user_id },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Get quiz with questions and answers
+    const quiz = await this.findOne(submitQuizDto.quiz_id);
+
+    // Check if user already has an attempt (since we only allow one attempt per user per quiz)
+    const existingAttempt = await this.quizAttemptRepository.findOne({
+      where: {
+        user_id: submitQuizDto.user_id,
+        quiz_id: submitQuizDto.quiz_id,
+      },
+    });
+
+    let quizAttempt: QuizAttempt;
+
+    if (existingAttempt) {
+      // Update existing attempt
+      quizAttempt = existingAttempt;
+      // Clear previous responses
+      await this.userQuestionResponseRepository.delete({
+        quiz_attempt_id: quizAttempt.id,
+      });
+    } else {
+      // Create new attempt
+      quizAttempt = this.quizAttemptRepository.create({
+        user_id: submitQuizDto.user_id,
+        quiz_id: submitQuizDto.quiz_id,
+        started_at: new Date(),
+        total_questions: quiz.questions.length,
+      });
+      quizAttempt = await this.quizAttemptRepository.save(quizAttempt);
+    }
+
+    const questionResults: QuestionResultDto[] = [];
+    let totalScore = 0;
+
+    // Process each response
+    for (const responseDto of submitQuizDto.responses) {
+      const question = quiz.questions.find(
+        (q) => q.id === responseDto.question_id,
+      );
+      if (!question) {
+        throw new BadRequestException(
+          `Question ${responseDto.question_id} not found in quiz`,
+        );
+      }
+
+      const scoreResult = this.scoreQuestion(question, responseDto);
+
+      // Save user response
+      const userResponse = this.userQuestionResponseRepository.create({
+        quiz_attempt_id: quizAttempt.id,
+        question_id: responseDto.question_id,
+        selected_answer_id: responseDto.selected_answer_id,
+        text_response: responseDto.text_response,
+        is_correct: scoreResult.isCorrect,
+        points_earned: scoreResult.pointsEarned,
+      });
+
+      await this.userQuestionResponseRepository.save(userResponse);
+
+      totalScore += scoreResult.pointsEarned;
+
+      questionResults.push({
+        question_id: question.id,
+        question_text: question.text,
+        user_answer: scoreResult.userAnswer,
+        correct_answer: scoreResult.correctAnswer,
+        is_correct: scoreResult.isCorrect,
+        points_earned: scoreResult.pointsEarned,
+      });
+    }
+
+    // Calculate final score and percentage
+    const percentage =
+      quiz.questions.length > 0
+        ? (totalScore / quiz.questions.length) * 100
+        : 0;
+    const passed = percentage >= 70; // 70% passing threshold
+
+    // Update quiz attempt
+    quizAttempt.score = totalScore;
+    quizAttempt.percentage = percentage;
+    quizAttempt.passed = passed;
+    quizAttempt.status = AttemptStatus.COMPLETED;
+    quizAttempt.completed_at = new Date();
+
+    await this.quizAttemptRepository.save(quizAttempt);
+
+    return {
+      attempt_id: quizAttempt.id,
+      quiz_id: quiz.id,
+      quiz_title: quiz.title,
+      score: totalScore,
+      total_questions: quiz.questions.length,
+      percentage: Number(percentage.toFixed(2)),
+      passed,
+      completed_at: quizAttempt.completed_at,
+      question_results: questionResults,
+    };
+  }
+
+  private scoreQuestion(
+    question: Question,
+    responseDto: QuestionResponseDto,
+  ): {
+    isCorrect: boolean;
+    pointsEarned: number;
+    userAnswer: string;
+    correctAnswer: string;
+  } {
+    const correctAnswers = question.answers.filter((answer) => answer.correct);
+
+    switch (question.type) {
+      case QuestionType.UNIQUE:
+      case QuestionType.BOOL:
+        return this.scoreUniqueQuestion(question, responseDto, correctAnswers);
+
+      case QuestionType.MULTIPLE:
+        return this.scoreMultipleChoiceQuestion(
+          question,
+          responseDto,
+          correctAnswers,
+        );
+
+      case QuestionType.TEXT:
+        return this.scoreTextQuestion(question, responseDto, correctAnswers);
+
+      default:
+        throw new BadRequestException(
+          `Unsupported question type: ${question.type as string}`,
+        );
+    }
+  }
+
+  private scoreUniqueQuestion(
+    question: Question,
+    responseDto: QuestionResponseDto,
+    correctAnswers: Answer[],
+  ) {
+    if (!responseDto.selected_answer_id) {
+      return {
+        isCorrect: false,
+        pointsEarned: 0,
+        userAnswer: 'No answer selected',
+        correctAnswer: correctAnswers[0]?.text || 'Unknown',
+      };
+    }
+
+    const selectedAnswer = question.answers.find(
+      (answer) => answer.id === responseDto.selected_answer_id,
+    );
+
+    const isCorrect = selectedAnswer?.correct || false;
+
+    return {
+      isCorrect,
+      pointsEarned: isCorrect ? 1 : 0,
+      userAnswer: selectedAnswer?.text || 'Unknown',
+      correctAnswer: correctAnswers[0]?.text || 'Unknown',
+    };
+  }
+
+  private scoreMultipleChoiceQuestion(
+    question: Question,
+    responseDto: QuestionResponseDto,
+    correctAnswers: Answer[],
+  ) {
+    if (!responseDto.selected_answer_id) {
+      return {
+        isCorrect: false,
+        pointsEarned: 0,
+        userAnswer: 'No answer selected',
+        correctAnswer: correctAnswers.map((a) => a.text).join(', '),
+      };
+    }
+
+    const selectedAnswer = question.answers.find(
+      (answer) => answer.id === responseDto.selected_answer_id,
+    );
+
+    const isCorrect = selectedAnswer?.correct || false;
+
+    return {
+      isCorrect,
+      pointsEarned: isCorrect ? 1 : 0,
+      userAnswer: selectedAnswer?.text || 'Unknown',
+      correctAnswer: correctAnswers.map((a) => a.text).join(', '),
+    };
+  }
+
+  private scoreTextQuestion(
+    question: Question,
+    responseDto: QuestionResponseDto,
+    correctAnswers: Answer[],
+  ) {
+    if (!responseDto.text_response) {
+      return {
+        isCorrect: false,
+        pointsEarned: 0,
+        userAnswer: 'No answer provided',
+        correctAnswer: correctAnswers[0]?.text || 'Unknown',
+      };
+    }
+
+    const correctAnswer = correctAnswers[0]?.text || '';
+    const userAnswer = responseDto.text_response?.trim() || '';
+
+    // Case-insensitive comparison
+    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+    return {
+      isCorrect,
+      pointsEarned: isCorrect ? 1 : 0,
+      userAnswer,
+      correctAnswer,
+    };
+  }
+
+  async getUserQuizAttempt(
+    userId: string,
+    quizId: string,
+  ): Promise<QuizAttempt | null> {
+    return await this.quizAttemptRepository.findOne({
+      where: {
+        user_id: userId,
+        quiz_id: quizId,
+      },
+      relations: [
+        'quiz',
+        'responses',
+        'responses.question',
+        'responses.selected_answer',
+      ],
+    });
+  }
+
+  async hasUserPassedQuiz(userId: string, quizId: string): Promise<boolean> {
+    const attempt = await this.getUserQuizAttempt(userId, quizId);
+    return attempt?.passed || false;
   }
 }
