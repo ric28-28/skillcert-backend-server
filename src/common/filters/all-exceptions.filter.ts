@@ -51,7 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }),
     };
 
-    // Log the error
+   
     this.logger.error(
       `${request.method} ${request.url} - ${status} - ${message}`,
       exception instanceof Error ? exception.stack : undefined,
