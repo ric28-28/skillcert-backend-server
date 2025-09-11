@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Category } from '../entities/category.entity';
 import { CategoriesRepository } from './categories.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -10,7 +15,9 @@ export class CategoriesService {
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     // Check if category name already exists
-    const nameExists = await this.categoriesRepository.nameExists(createCategoryDto.name);
+    const nameExists = await this.categoriesRepository.nameExists(
+      createCategoryDto.name,
+    );
     if (nameExists) {
       throw new ConflictException('Category name already exists');
     }
@@ -35,7 +42,10 @@ export class CategoriesService {
     return category;
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
     if (!id) {
       throw new BadRequestException('Category ID is required');
     }
@@ -48,13 +58,19 @@ export class CategoriesService {
 
     // Check if name is being updated and if it already exists
     if (updateCategoryDto.name) {
-      const nameExists = await this.categoriesRepository.nameExists(updateCategoryDto.name, id);
+      const nameExists = await this.categoriesRepository.nameExists(
+        updateCategoryDto.name,
+        id,
+      );
       if (nameExists) {
         throw new ConflictException('Category name already exists');
       }
     }
 
-    const updatedCategory = await this.categoriesRepository.update(id, updateCategoryDto);
+    const updatedCategory = await this.categoriesRepository.update(
+      id,
+      updateCategoryDto,
+    );
     if (!updatedCategory) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
@@ -77,9 +93,11 @@ export class CategoriesService {
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
-    
+
     if (category.courses && category.courses.length > 0) {
-      throw new BadRequestException('Cannot delete category with associated courses');
+      throw new BadRequestException(
+        'Cannot delete category with associated courses',
+      );
     }
 
     const deleted = await this.categoriesRepository.delete(id);

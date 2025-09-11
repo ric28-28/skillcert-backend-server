@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as fs from 'fs';
+import * as path from 'path';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import * as path from 'path';
-import * as fs from 'fs';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 function loadModules(): (new () => any)[] {
   const modulesDir = path.join(__dirname);

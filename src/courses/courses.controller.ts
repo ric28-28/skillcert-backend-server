@@ -1,21 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  Put,
-  ParseUUIDPipe,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
 
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) { }
+  constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

@@ -1,12 +1,12 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Answer } from '../../answer/entities/answer.entity';
 import { Quiz } from '../../quiz/entities/quiz.entity';

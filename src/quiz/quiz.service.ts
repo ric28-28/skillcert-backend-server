@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Quiz } from './entities/quiz.entity';
-import { Question } from '../question/entities/question.entity';
 import { Answer } from '../answer/entities/answer.entity';
+import { Question } from '../question/entities/question.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { Quiz } from './entities/quiz.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
 
 @Injectable()

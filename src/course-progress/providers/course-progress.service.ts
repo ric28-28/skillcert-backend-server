@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CourseProgress, ProgressStatus } from '../entities/course-progress.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
+import {
+  CourseProgress,
+  ProgressStatus,
+} from '../entities/course-progress.entity';
 
 @Injectable()
 export class CourseProgressService {
@@ -18,14 +21,21 @@ export class CourseProgressService {
   ) {}
 
   async updateProgress(dto: UpdateProgressDto) {
-    const enrollment = await this.enrollmentRepo.findOne({ where: { id: dto.enrollmentId } });
+    const enrollment = await this.enrollmentRepo.findOne({
+      where: { id: dto.enrollmentId },
+    });
     if (!enrollment) throw new NotFoundException('Enrollment not found');
 
-    const lesson = await this.lessonRepo.findOne({ where: { id: dto.lessonId } });
+    const lesson = await this.lessonRepo.findOne({
+      where: { id: dto.lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     let progress = await this.progressRepo.findOne({
-      where: { enrollment: { id: dto.enrollmentId }, lesson: { id: dto.lessonId } },
+      where: {
+        enrollment: { id: dto.enrollmentId },
+        lesson: { id: dto.lessonId },
+      },
       relations: ['enrollment', 'lesson'],
     });
 
@@ -49,7 +59,7 @@ export class CourseProgressService {
     });
   }
 
-   async getCompletionRate(enrollmentId: string) {
+  async getCompletionRate(enrollmentId: string) {
     const total = await this.progressRepo.count({
       where: { enrollment: { id: enrollmentId } },
     });
@@ -59,7 +69,7 @@ export class CourseProgressService {
     }
 
     const completed = await this.progressRepo.count({
-      where: { 
+      where: {
         enrollment: { id: enrollmentId },
         status: ProgressStatus.COMPLETED,
       },
@@ -67,7 +77,7 @@ export class CourseProgressService {
 
     const completionRate = (completed / total) * 100;
 
-    return { 
+    return {
       enrollmentId,
       completed,
       total,
@@ -76,18 +86,17 @@ export class CourseProgressService {
   }
 
   // course-progress.service.ts
-async getAnalytics() {
-  const totalProgress = await this.progressRepo.count();
-  const completed = await this.progressRepo.count({
-    where: { status: ProgressStatus.COMPLETED  },
-  });
+  async getAnalytics() {
+    const totalProgress = await this.progressRepo.count();
+    const completed = await this.progressRepo.count({
+      where: { status: ProgressStatus.COMPLETED },
+    });
 
-  return {
-    totalProgress,
-    completed,
-    overallCompletionRate: totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
-  };
-}
-
-
+    return {
+      totalProgress,
+      completed,
+      overallCompletionRate:
+        totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
+    };
+  }
 }
