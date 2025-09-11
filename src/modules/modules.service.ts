@@ -28,11 +28,11 @@ export class ModulesService {
       where: { id },
       relations: ['course', 'lessons'],
     });
-    
+
     if (!module) {
       throw new NotFoundException(`Module with ID ${id} not found`);
     }
-    
+
     return module;
   }
 

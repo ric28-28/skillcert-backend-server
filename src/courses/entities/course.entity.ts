@@ -13,6 +13,7 @@ import { Review } from 'src/reviews/entities/reviews.entity';
 import { Module } from 'src/entities/module.entity';
 import { Category } from '../../entities/category.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
+import { Objective } from '../../objectives/entities/objective.entity';
 
 @Entity('courses')
 export class Course {
@@ -47,6 +48,12 @@ export class Course {
   @ManyToOne(() => Category, { eager: true })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @OneToMany(() => Objective, (objective) => objective.course, {
+    cascade: true,
+    eager: false,
+  })
+  objectives: Objective[];
 
   @CreateDateColumn()
   createdAt: Date;
