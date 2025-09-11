@@ -23,6 +23,9 @@ async function bootstrap() {
     }),
   );
 
+  // Apply request timeout interceptor
+  app.useGlobalInterceptors(new RequestTimeoutInterceptor(5000));
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
