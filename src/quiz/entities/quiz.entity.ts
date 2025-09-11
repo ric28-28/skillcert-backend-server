@@ -1,15 +1,15 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { Question } from '../../question/entities/question.entity';
 import { Lesson } from '../../entities/lesson.entity';
+import { Question } from '../../question/entities/question.entity';
 
 @Entity('quizzes')
 export class Quiz {

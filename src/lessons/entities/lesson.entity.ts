@@ -1,15 +1,15 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Module } from '../../modules/entities/module.entity';
 import { CourseProgress } from '../../course-progress/entities/course-progress.entity';
+import { Module } from '../../modules/entities/module.entity';
 
 export enum LessonType {
   TEXT = 'text',
@@ -39,10 +39,8 @@ export class Lesson {
   module_id: string;
 
   @ManyToOne(() => Module, (module) => module.lessons)
-   
-@OneToMany(() => CourseProgress, (progress) => progress.lesson)
-progress: CourseProgress[];
-
+  @OneToMany(() => CourseProgress, (progress) => progress.lesson)
+  progress: CourseProgress[];
 
   @JoinColumn({ name: 'module_id' })
   module: Module;

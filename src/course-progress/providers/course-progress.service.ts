@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CourseProgress, ProgressStatus } from '../entities/course-progress.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';
 import { Quiz } from '../../quiz/entities/quiz.entity';
 import { QuizAttempt } from '../../quiz/entities/quiz-attempt.entity';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
+import {
+  CourseProgress,
+  ProgressStatus,
+} from '../entities/course-progress.entity';
 
 @Injectable()
 export class CourseProgressService {
@@ -30,7 +33,9 @@ export class CourseProgressService {
     });
     if (!enrollment) throw new NotFoundException('Enrollment not found');
 
-    const lesson = await this.lessonRepo.findOne({ where: { id: dto.lessonId } });
+    const lesson = await this.lessonRepo.findOne({
+      where: { id: dto.lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     // If trying to mark lesson as completed, check if quiz requirements are met
@@ -39,7 +44,10 @@ export class CourseProgressService {
     }
 
     let progress = await this.progressRepo.findOne({
-      where: { enrollment: { id: dto.enrollmentId }, lesson: { id: dto.lessonId } },
+      where: {
+        enrollment: { id: dto.enrollmentId },
+        lesson: { id: dto.lessonId },
+      },
       relations: ['enrollment', 'lesson'],
     });
 
@@ -127,9 +135,8 @@ export class CourseProgressService {
     return {
       totalProgress,
       completed,
-      overallCompletionRate: totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
+      overallCompletionRate:
+        totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
     };
   }
-
-
 }

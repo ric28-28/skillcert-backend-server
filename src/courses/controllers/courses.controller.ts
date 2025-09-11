@@ -1,22 +1,21 @@
-
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpStatus,
-  HttpCode,
-  ValidationPipe,
-  UsePipes,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import type { Course } from '../entities/course.entity';
-import { CoursesService } from '../providers/courses.service';
 import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
+import type { Course } from '../entities/course.entity';
+import { CoursesService } from '../providers/courses.service';
 
 @Controller('courses')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))

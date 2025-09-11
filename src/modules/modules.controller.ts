@@ -1,17 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
   ParseUUIDPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { ModulesService } from './modules.service';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { Module } from './entities/module.entity';
+import { ModulesService } from './modules.service';
 
 @Controller('modules')
 export class ModulesController {
@@ -33,7 +33,9 @@ export class ModulesController {
   }
 
   @Get('course/:courseId')
-  async findByCourseId(@Param('courseId', ParseUUIDPipe) courseId: string): Promise<Module[]> {
+  async findByCourseId(
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+  ): Promise<Module[]> {
     return this.modulesService.findByCourseId(courseId);
   }
 

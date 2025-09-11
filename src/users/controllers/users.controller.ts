@@ -1,22 +1,22 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpStatus,
-  HttpCode,
-  ValidationPipe,
   UsePipes,
-} from "@nestjs/common"
-import type { User } from "../entities/user.entity"
-import { UsersService } from "../providers/users.service";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
+  ValidationPipe,
+} from '@nestjs/common';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import type { User } from '../entities/user.entity';
+import { UsersService } from '../providers/users.service';
 
-@Controller("users")
+@Controller('users')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -37,16 +37,16 @@ export class UsersController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<{
-    message: string
-    data: User[]
-    count: number
+    message: string;
+    data: User[];
+    count: number;
   }> {
-    const users = await this.usersService.findAll()
+    const users = await this.usersService.findAll();
     return {
-      message: "Users retrieved successfully",
+      message: 'Users retrieved successfully',
       data: users,
       count: users.length,
-    }
+    };
   }
 
   @Get(':id')
@@ -62,20 +62,20 @@ export class UsersController {
     };
   }
 
-  @Put(":id")
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<{
-    message: string
-    data: User
+    message: string;
+    data: User;
   }> {
-    const user = await this.usersService.update(id, updateUserDto)
+    const user = await this.usersService.update(id, updateUserDto);
     return {
-      message: "User updated successfully",
+      message: 'User updated successfully',
       data: user,
-    }
+    };
   }
 
   @Delete(':id')

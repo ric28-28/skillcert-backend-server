@@ -1,47 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm"
-import { Course } from "../../courses/entities/course.entity"
-import { Review } from "src/reviews/entities/reviews.entity"
-import { Enrollment } from "../../enrollment/entities/enrollment.entity"
+import { Review } from 'src/reviews/entities/reviews.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Course } from '../../courses/entities/course.entity';
+import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 
 export enum UserRole {
-  ADMIN = "admin",
-  USER = "user",
-  MODERATOR = "moderator",
+  ADMIN = 'admin',
+  USER = 'user',
+  MODERATOR = 'moderator',
 }
 
-@Entity("users")
+@Entity('users')
 export class User {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ type: "varchar", length: 100 })
-  name: string
+  @Column({ type: 'varchar', length: 100 })
+  name: string;
 
-  @Column({ type: "varchar", length: 255, unique: true })
-  email: string
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string;
 
-  @Column({ type: "varchar", length: 255 })
-  password: string
+  @Column({ type: 'varchar', length: 255 })
+  password: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
-  role: UserRole
+  role: UserRole;
 
-  @OneToMany(() => Course, course => course.professor)
-  courses: Course[]
+  @OneToMany(() => Course, (course) => course.professor)
+  courses: Course[];
 
-  @OneToMany(() => Review, review => review.user)
-  reviews: Review[]
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
   enrollments: Enrollment[];
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 }

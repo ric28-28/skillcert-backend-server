@@ -1,26 +1,28 @@
 import {
   IsNotEmpty,
-  IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
-  MinLength,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsUUID,
 } from 'class-validator';
 
-export class CreateLessonResourceDto {
+export class CreateObjectiveDto {
   @IsNotEmpty()
   @IsString()
-  @MinLength(1)
-  @MaxLength(255)
   title: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(1000)
   description?: string;
 
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  order?: number;
+
   @IsNotEmpty()
-  @IsString()
-  @IsUUID()
-  lesson_id: string;
+  @IsUUID('4')
+  courseId: string;
 }
