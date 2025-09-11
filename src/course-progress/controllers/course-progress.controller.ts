@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CourseProgressService } from '../providers/course-progress.service';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
 
