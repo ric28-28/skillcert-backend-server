@@ -21,28 +21,28 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
     let message = 'Database error';
     let error = 'Database Error';
 
-    // Handle specific TypeORM errors
+    
     if (exception instanceof QueryFailedError) {
       const err = exception as any;
       
-      // PostgreSQL error codes
+    
       switch (err.code) {
-        case '23505': // unique_violation
+        case '23505': 
           status = HttpStatus.CONFLICT;
           message = 'Duplicate entry';
           error = 'Conflict Error';
           break;
-        case '23503': // foreign_key_violation
+        case '23503':
           status = HttpStatus.BAD_REQUEST;
           message = 'Related resource not found';
           error = 'Foreign Key Violation';
           break;
-        case '23502': // not_null_violation
+        case '23502': 
           status = HttpStatus.BAD_REQUEST;
           message = 'Missing required field';
           error = 'Not Null Violation';
           break;
-        case '22P02': // invalid_text_representation
+        case '22P02':
           status = HttpStatus.BAD_REQUEST;
           message = 'Invalid input syntax';
           error = 'Invalid Input';
