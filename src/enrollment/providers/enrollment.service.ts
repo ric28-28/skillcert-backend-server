@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Enrollment } from '../entities/enrollment.entity';
-import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
-import { User } from '../../users/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
+import { User } from '../../users/entities/user.entity';
+import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
+import { Enrollment } from '../entities/enrollment.entity';
 
 @Injectable()
 export class EnrollmentService {
@@ -19,7 +19,9 @@ export class EnrollmentService {
 
   async enroll(dto: CreateEnrollmentDto): Promise<Enrollment> {
     const user = await this.userRepo.findOne({ where: { id: dto.userId } });
-    const course = await this.courseRepo.findOne({ where: { id: dto.courseId } });
+    const course = await this.courseRepo.findOne({
+      where: { id: dto.courseId },
+    });
 
     if (!user) throw new NotFoundException('User not found');
     if (!course) throw new NotFoundException('Course not found');

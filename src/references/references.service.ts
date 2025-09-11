@@ -50,7 +50,10 @@ export class ReferencesService {
     });
   }
 
-  async update(id: string, updateReferenceDto: UpdateReferenceDto): Promise<Reference> {
+  async update(
+    id: string,
+    updateReferenceDto: UpdateReferenceDto,
+  ): Promise<Reference> {
     const reference = await this.findOne(id);
     Object.assign(reference, updateReferenceDto);
     return await this.referencesRepository.save(reference);

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { LESSON_RESOURCES_PATH } from 'src/lesson-resources/constants';
+import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
 import { Repository } from 'typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { LessonResourcesService } from './lesson-resources.service';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
 import { FileStorageInterface } from '../storage/interfaces/file-storage.interface';
-import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
 import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
-import { LESSON_RESOURCES_PATH } from 'src/lesson-resources/constants';
+import { LessonResourcesService } from './lesson-resources.service';
 
 describe('LessonResourcesService', () => {
   let service: LessonResourcesService;

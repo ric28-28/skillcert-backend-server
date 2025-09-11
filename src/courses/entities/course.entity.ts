@@ -1,19 +1,19 @@
+import { Module } from 'src/entities/module.entity';
+import { Review } from 'src/reviews/entities/reviews.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Review } from 'src/reviews/entities/reviews.entity';
-import { Module } from 'src/entities/module.entity';
-import { Category } from '../../entities/category.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Objective } from '../../objectives/entities/objective.entity';
+import { Category } from '../../entities/category.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('courses')
 export class Course {

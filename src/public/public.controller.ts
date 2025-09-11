@@ -1,13 +1,7 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 
 @Controller('public')
 export class PublicController {
-  
   @Get('info')
   @HttpCode(HttpStatus.OK)
   getPublicInfo() {

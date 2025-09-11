@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { IsBoolean, IsOptional } from 'class-validator';
 import { CreateLessonResourceDto } from './create-lesson-resource.dto';
-import { IsOptional, IsBoolean } from 'class-validator';
 
 export class UpdateLessonResourceDto extends PartialType(
   CreateLessonResourceDto,

@@ -1,15 +1,15 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsEnum,
-  IsOptional,
-  ValidateNested,
-  IsArray,
-  IsInt,
-} from 'class-validator';
 import { Type } from 'class-transformer';
-import { QuestionType } from '../entities/question.entity';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreateAnswerDto } from '../../answer/dto/create-answer.dto';
+import { QuestionType } from '../entities/question.entity';
 
 export class CreateQuestionDto {
   @IsNotEmpty()

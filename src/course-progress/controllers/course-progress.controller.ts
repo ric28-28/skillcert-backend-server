@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Patch } from '@nestjs/common';
-import { CourseProgressService } from '../providers/course-progress.service';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
+import { CourseProgressService } from '../providers/course-progress.service';
 
 @Controller('course-progress')
 export class CourseProgressController {
@@ -22,9 +22,8 @@ export class CourseProgressController {
     return this.progressService.getCompletionRate(enrollmentId);
   }
 
-@Get('analytics/overview')
-async getAnalytics() {
-  return this.progressService.getAnalytics();
-}
-
+  @Get('analytics/overview')
+  async getAnalytics() {
+    return this.progressService.getAnalytics();
+  }
 }

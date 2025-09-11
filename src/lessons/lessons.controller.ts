@@ -1,20 +1,19 @@
-
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  ParseUUIDPipe,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { LessonsService } from './lessons.service';
+import { Lesson } from '../entities/lesson.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
-import { Lesson } from '../entities/lesson.entity';
+import { LessonsService } from './lessons.service';
 
 @Controller('lessons')
 export class LessonsController {
@@ -37,7 +36,9 @@ export class LessonsController {
   }
 
   @Get('module/:moduleId')
-  async findByModuleId(@Param('moduleId', ParseUUIDPipe) moduleId: string): Promise<Lesson[]> {
+  async findByModuleId(
+    @Param('moduleId', ParseUUIDPipe) moduleId: string,
+  ): Promise<Lesson[]> {
     return this.lessonsService.findByModuleId(moduleId);
   }
 
@@ -55,7 +56,6 @@ export class LessonsController {
     await this.lessonsService.remove(id);
   }
 }
-
 
 // import {
 //   Controller,

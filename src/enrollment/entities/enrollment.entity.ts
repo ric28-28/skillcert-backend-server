@@ -1,7 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, Column, CreateDateColumn, Unique } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Course } from '../../courses/entities/course.entity'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { CourseProgress } from '../../course-progress/entities/course-progress.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('enrollments')
 @Unique(['user', 'course'])
@@ -12,12 +20,13 @@ export class Enrollment {
   @ManyToOne(() => User, (user) => user.enrollments, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.enrollments, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.enrollments, {
+    onDelete: 'CASCADE',
+  })
   course: Course;
 
-@OneToMany(() => CourseProgress, (progress) => progress.enrollment)
-progress: CourseProgress[];
-
+  @OneToMany(() => CourseProgress, (progress) => progress.enrollment)
+  progress: CourseProgress[];
 
   @CreateDateColumn()
   enrolledAt: Date;

@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
-import { EnrollmentService } from '../providers/enrollment.service';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
+import { EnrollmentService } from '../providers/enrollment.service';
 
 @Controller('enrollments')
 export class EnrollmentController {
