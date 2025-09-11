@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CentralizedLoggerService } from './centralized-logger.service';
-import { LogLevel } from '../interfaces/logger.interface';
 
 describe('CentralizedLoggerService', () => {
   let service: CentralizedLoggerService;

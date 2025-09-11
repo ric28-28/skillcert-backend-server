@@ -1,4 +1,3 @@
-
 import { CentralizedLoggerService } from './services/centralized-logger.service';
 
 async function demonstrateLogger() {
@@ -28,15 +27,11 @@ async function demonstrateLogger() {
   try {
     throw new Error('Simulated database connection error');
   } catch (error) {
-    userLogger.error(
-      'Database connection failed',
-      error as Error,
-      {
-        operation: 'database_connect',
-        host: 'localhost',
-        port: 5432,
-      }
-    );
+    userLogger.error('Database connection failed', error as Error, {
+      operation: 'database_connect',
+      host: 'localhost',
+      port: 5432,
+    });
   }
 
   // HTTP request logging
@@ -59,10 +54,15 @@ async function demonstrateLogger() {
   });
 
   // Validation error logging
-  userLogger.logValidationError('email', 'invalid-email', 'must be valid email format', {
-    userId: 'user123',
-    operation: 'user_registration',
-  });
+  userLogger.logValidationError(
+    'email',
+    'invalid-email',
+    'must be valid email format',
+    {
+      userId: 'user123',
+      operation: 'user_registration',
+    },
+  );
 
   // Database operation logging
   userLogger.logDatabaseOperation('SELECT', 'users', {

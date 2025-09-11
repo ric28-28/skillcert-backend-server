@@ -13,7 +13,7 @@ try {
   logger.debug('Test debug message');
   logger.warn('Test warning message');
   logger.error('Test error message', new Error('Test error'));
-  
+
   console.log('✅ All logging methods work correctly');
 } catch (error) {
   console.error('❌ Error in logging methods:', error);

@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ILoggerService, LogContext, LogLevel, LogEntry } from '../interfaces/logger.interface';
+import {
+  ILoggerService,
+  LogContext,
+  LogEntry,
+  LogLevel,
+} from '../interfaces/logger.interface';
 
 @Injectable()
 export class CentralizedLoggerService implements ILoggerService {
@@ -30,7 +35,12 @@ export class CentralizedLoggerService implements ILoggerService {
    * Log debug messages
    */
   debug(message: string, context?: LogContext): void {
-    const logEntry = this.createLogEntry(LogLevel.DEBUG, message, undefined, context);
+    const logEntry = this.createLogEntry(
+      LogLevel.DEBUG,
+      message,
+      undefined,
+      context,
+    );
     this.logger.debug(this.formatMessage(logEntry));
   }
 
@@ -38,7 +48,12 @@ export class CentralizedLoggerService implements ILoggerService {
    * Log info messages
    */
   info(message: string, context?: LogContext): void {
-    const logEntry = this.createLogEntry(LogLevel.INFO, message, undefined, context);
+    const logEntry = this.createLogEntry(
+      LogLevel.INFO,
+      message,
+      undefined,
+      context,
+    );
     this.logger.log(this.formatMessage(logEntry));
   }
 
@@ -46,7 +61,12 @@ export class CentralizedLoggerService implements ILoggerService {
    * Log warning messages
    */
   warn(message: string, context?: LogContext): void {
-    const logEntry = this.createLogEntry(LogLevel.WARN, message, undefined, context);
+    const logEntry = this.createLogEntry(
+      LogLevel.WARN,
+      message,
+      undefined,
+      context,
+    );
     this.logger.warn(this.formatMessage(logEntry));
   }
 
@@ -54,9 +74,14 @@ export class CentralizedLoggerService implements ILoggerService {
    * Log error messages
    */
   error(message: string, error?: Error, context?: LogContext): void {
-    const logEntry = this.createLogEntry(LogLevel.ERROR, message, error, context);
+    const logEntry = this.createLogEntry(
+      LogLevel.ERROR,
+      message,
+      error,
+      context,
+    );
     const stack = error?.stack;
-    
+
     this.logger.error(this.formatMessage(logEntry), stack);
   }
 
@@ -67,7 +92,7 @@ export class CentralizedLoggerService implements ILoggerService {
     level: LogLevel,
     message: string,
     error?: Error,
-    additionalContext?: LogContext
+    additionalContext?: LogContext,
   ): LogEntry {
     return {
       level,
@@ -90,7 +115,9 @@ export class CentralizedLoggerService implements ILoggerService {
 
       // Add request-related context
       if (logEntry.additionalContext.method && logEntry.additionalContext.url) {
-        contextParts.push(`${logEntry.additionalContext.method} ${logEntry.additionalContext.url}`);
+        contextParts.push(
+          `${logEntry.additionalContext.method} ${logEntry.additionalContext.url}`,
+        );
       }
 
       // Add user context
@@ -105,7 +132,9 @@ export class CentralizedLoggerService implements ILoggerService {
 
       // Add correlation ID for distributed tracing
       if (logEntry.additionalContext.correlationId) {
-        contextParts.push(`CorrelationID: ${logEntry.additionalContext.correlationId}`);
+        contextParts.push(
+          `CorrelationID: ${logEntry.additionalContext.correlationId}`,
+        );
       }
 
       // Add status code if available
@@ -174,7 +203,7 @@ export class CentralizedLoggerService implements ILoggerService {
     url: string,
     statusCode: number,
     responseTime: number,
-    context?: LogContext
+    context?: LogContext,
   ): void {
     const level = statusCode >= 400 ? LogLevel.ERROR : LogLevel.INFO;
     const message = `${method} ${url} - Request completed`;
@@ -201,7 +230,11 @@ export class CentralizedLoggerService implements ILoggerService {
   /**
    * Log database operations
    */
-  logDatabaseOperation(operation: string, entity: string, context?: LogContext): void {
+  logDatabaseOperation(
+    operation: string,
+    entity: string,
+    context?: LogContext,
+  ): void {
     this.debug(`Database ${operation} on ${entity}`, {
       operation,
       entity,
@@ -223,12 +256,20 @@ export class CentralizedLoggerService implements ILoggerService {
   /**
    * Log validation errors
    */
-  logValidationError(field: string, value: any, rule: string, context?: LogContext): void {
-    this.warn(`Validation failed for field '${field}' with value '${value}' - Rule: ${rule}`, {
-      field,
-      value,
-      rule,
-      ...context,
-    });
+  logValidationError(
+    field: string,
+    value: any,
+    rule: string,
+    context?: LogContext,
+  ): void {
+    this.warn(
+      `Validation failed for field '${field}' with value '${value}' - Rule: ${rule}`,
+      {
+        field,
+        value,
+        rule,
+        ...context,
+      },
+    );
   }
 }
