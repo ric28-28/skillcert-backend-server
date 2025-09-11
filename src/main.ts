@@ -3,13 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout.interceptor';
+import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Apply global exception filter
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // Apply global exception filters
+  app.useGlobalFilters(
+    new DatabaseExceptionFilter(),
+    new AllExceptionsFilter()
+  );
 
   // Apply global validation pipe
   app.useGlobalPipes(
