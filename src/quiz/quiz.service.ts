@@ -1,23 +1,22 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
   Inject,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Answer } from '../answer/entities/answer.entity';
-import { QuizAttempt, AttemptStatus } from './entities/quiz-attempt.entity';
-import { UserQuestionResponse } from './entities/user-question-response.entity';
+import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
+import { Question, QuestionType } from '../question/entities/question.entity';
 import { User } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
-import { SubmitQuizDto, QuestionResponseDto } from './dto/submit-quiz.dto';
-import { QuizResultDto, QuestionResultDto } from './dto/quiz-result.dto';
-import { Question } from '../question/entities/question.entity';
+import { QuestionResultDto, QuizResultDto } from './dto/quiz-result.dto';
+import { QuestionResponseDto, SubmitQuizDto } from './dto/submit-quiz.dto';
+import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
+import { UserQuestionResponse } from './entities/user-question-response.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
-import { QuestionType } from '../question/entities/question.entity';
-import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 
 @Injectable()
 export class QuizService {
@@ -349,7 +348,7 @@ export class QuizService {
   }
 
   private scoreTextQuestion(
-    question: Question,
+    _question: Question,
     responseDto: QuestionResponseDto,
     correctAnswers: Answer[],
   ) {

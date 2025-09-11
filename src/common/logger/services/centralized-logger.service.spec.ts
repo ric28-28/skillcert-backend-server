@@ -25,10 +25,10 @@ describe('CentralizedLoggerService', () => {
   it('should create a child logger with different context', () => {
     const parentContext = 'ParentService';
     const childContext = 'ChildService';
-    
+
     service.setContext(parentContext);
     const childLogger = service.createChildLogger(childContext);
-    
+
     expect(service.getContext()).toBe(parentContext);
     expect(childLogger.getContext()).toBe(childContext);
   });
@@ -48,9 +48,9 @@ describe('CentralizedLoggerService', () => {
     it('should log debug messages', () => {
       const message = 'Debug message';
       const context = { userId: 'test123' };
-      
+
       service.debug(message, context);
-      
+
       // Since debug calls super.debug internally, we can't easily test the exact output
       // but we can verify the method runs without error
       expect(consoleSpy).toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('CentralizedLoggerService', () => {
     it('should log info messages', () => {
       const message = 'Info message';
       const context = { operation: 'test' };
-      
+
       service.info(message, context);
       expect(consoleSpy).toHaveBeenCalled();
     });
@@ -67,7 +67,7 @@ describe('CentralizedLoggerService', () => {
     it('should log warning messages', () => {
       const message = 'Warning message';
       const context = { threshold: 90 };
-      
+
       service.warn(message, context);
       expect(consoleSpy).toHaveBeenCalled();
     });
@@ -76,7 +76,7 @@ describe('CentralizedLoggerService', () => {
       const message = 'Error message';
       const error = new Error('Test error');
       const context = { operation: 'test_operation' };
-      
+
       service.error(message, error, context);
       expect(consoleSpy).toHaveBeenCalled();
     });
@@ -100,16 +100,16 @@ describe('CentralizedLoggerService', () => {
       const method = 'GET';
       const url = '/api/test';
       const context = { userId: 'user123' };
-      
+
       service.logHttpRequest(method, url, context);
-      
+
       expect(infoSpy).toHaveBeenCalledWith(
         `${method} ${url} - Request started`,
         expect.objectContaining({
           method,
           url,
           ...context,
-        })
+        }),
       );
     });
 
@@ -119,9 +119,9 @@ describe('CentralizedLoggerService', () => {
       const statusCode = 200;
       const responseTime = 150;
       const context = { userId: 'user123' };
-      
+
       service.logHttpResponse(method, url, statusCode, responseTime, context);
-      
+
       expect(infoSpy).toHaveBeenCalledWith(
         `${method} ${url} - Request completed`,
         expect.objectContaining({
@@ -130,7 +130,7 @@ describe('CentralizedLoggerService', () => {
           statusCode,
           responseTime,
           ...context,
-        })
+        }),
       );
     });
 
@@ -140,9 +140,9 @@ describe('CentralizedLoggerService', () => {
       const statusCode = 500;
       const responseTime = 250;
       const context = { userId: 'user123' };
-      
+
       service.logHttpResponse(method, url, statusCode, responseTime, context);
-      
+
       expect(errorSpy).toHaveBeenCalledWith(
         `${method} ${url} - Request completed`,
         undefined,
@@ -152,7 +152,7 @@ describe('CentralizedLoggerService', () => {
           statusCode,
           responseTime,
           ...context,
-        })
+        }),
       );
     });
 
@@ -160,16 +160,16 @@ describe('CentralizedLoggerService', () => {
       const event = 'user_registered';
       const details = { userId: 'user123', email: 'test@example.com' };
       const context = { source: 'registration_controller' };
-      
+
       service.logBusinessEvent(event, details, context);
-      
+
       expect(infoSpy).toHaveBeenCalledWith(
         `Business Event: ${event}`,
         expect.objectContaining({
           event,
           details,
           ...context,
-        })
+        }),
       );
     });
 
@@ -177,22 +177,22 @@ describe('CentralizedLoggerService', () => {
       const operation = 'SELECT';
       const entity = 'users';
       const context = { userId: 'user123' };
-      
+
       service.logDatabaseOperation(operation, entity, context);
-      
+
       // Database operations use debug level
       const debugSpy = jest.spyOn(service, 'debug').mockImplementation();
       service.logDatabaseOperation(operation, entity, context);
-      
+
       expect(debugSpy).toHaveBeenCalledWith(
         `Database ${operation} on ${entity}`,
         expect.objectContaining({
           operation,
           entity,
           ...context,
-        })
+        }),
       );
-      
+
       debugSpy.mockRestore();
     });
 
@@ -201,10 +201,10 @@ describe('CentralizedLoggerService', () => {
       const value = 'invalid-email';
       const rule = 'must be valid email format';
       const context = { userId: 'user123' };
-      
+
       const warnSpy = jest.spyOn(service, 'warn').mockImplementation();
       service.logValidationError(field, value, rule, context);
-      
+
       expect(warnSpy).toHaveBeenCalledWith(
         `Validation failed for field '${field}' with value '${value}' - Rule: ${rule}`,
         expect.objectContaining({
@@ -212,9 +212,9 @@ describe('CentralizedLoggerService', () => {
           value,
           rule,
           ...context,
-        })
+        }),
       );
-      
+
       warnSpy.mockRestore();
     });
   });
