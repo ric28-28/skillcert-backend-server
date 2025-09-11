@@ -1,9 +1,9 @@
 import {
   IsNotEmpty,
-  IsOptional,
   IsString,
   IsUUID,
   MinLength,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateCourseDto {

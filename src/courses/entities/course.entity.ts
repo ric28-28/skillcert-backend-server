@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
+import { Objective } from '../../objectives/entities/objective.entity';
 import { Category } from '../../entities/category.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -47,6 +48,12 @@ export class Course {
   @ManyToOne(() => Category, { eager: true })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @OneToMany(() => Objective, (objective) => objective.course, {
+    cascade: true,
+    eager: false,
+  })
+  objectives: Objective[];
 
   @CreateDateColumn()
   createdAt: Date;
