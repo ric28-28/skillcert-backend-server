@@ -1,27 +1,27 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseInterceptors,
-  UploadedFile,
-  ParseUUIDPipe,
-  HttpStatus,
-  HttpCode,
-  Query,
   BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { LessonResourcesService } from './lesson-resources.service';
-import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
-import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
+import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
+import { LessonResourcesService } from './lesson-resources.service';
 
 @Controller('lesson-resources')
 export class LessonResourcesController {

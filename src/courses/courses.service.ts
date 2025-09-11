@@ -8,7 +8,7 @@ export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
-  ) { }
+  ) {}
 
   async create(createCourseDto: {
     title: string;

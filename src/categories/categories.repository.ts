@@ -31,7 +31,10 @@ export class CategoriesRepository {
     });
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category | null> {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category | null> {
     await this.categoryRepository.update(id, updateCategoryDto);
     return await this.findById(id);
   }

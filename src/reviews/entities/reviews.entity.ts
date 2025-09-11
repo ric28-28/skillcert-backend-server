@@ -2,13 +2,13 @@ import { BadRequestException } from '@nestjs/common';
 import { Course } from 'src/courses/entities/course.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
-  Entity,
   Column,
-  PrimaryColumn,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('reviews')

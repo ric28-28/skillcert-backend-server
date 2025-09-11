@@ -1,11 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  UpdateDateColumn,
   CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';

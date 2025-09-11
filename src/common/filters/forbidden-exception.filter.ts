@@ -1,7 +1,7 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   ForbiddenException,
   HttpStatus,
 } from '@nestjs/common';
@@ -21,7 +21,9 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
       method: ctx.getRequest().method,
       message: 'Access Denied - Insufficient permissions',
       error: 'Forbidden',
-      details: exception.message || 'You do not have permission to access this resource',
+      details:
+        exception.message ||
+        'You do not have permission to access this resource',
     };
 
     response.status(status).json(errorResponse);

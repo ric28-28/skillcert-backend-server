@@ -1,20 +1,20 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
   Inject,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
 import { Repository } from 'typeorm';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
-import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 import { FileStorageInterface } from '../storage/interfaces/file-storage.interface';
-import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
-import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
 import { LESSON_RESOURCES_PATH } from './constants';
+import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 
 @Injectable()
 export class LessonResourcesService {

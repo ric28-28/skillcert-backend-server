@@ -1,7 +1,7 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 
@@ -9,11 +9,11 @@ import {
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    
+
     // For demonstration purposes, we'll check for a simple header
     // In a real implementation, you would validate JWT tokens here
     const authHeader = request.headers.authorization;
-    
+
     if (!authHeader) {
       throw new UnauthorizedException('Authorization header is required');
     }

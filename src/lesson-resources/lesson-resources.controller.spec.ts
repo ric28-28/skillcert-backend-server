@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { LessonResourcesController } from './lesson-resources.controller';
-import { LessonResourcesService } from './lesson-resources.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
+import { LessonResourcesController } from './lesson-resources.controller';
+import { LessonResourcesService } from './lesson-resources.service';
 
 describe('LessonResourcesController', () => {
   let controller: LessonResourcesController;
