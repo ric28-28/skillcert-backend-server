@@ -4,13 +4,19 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
+  Inject,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { CentralizedLoggerService } from '../logger/services/centralized-logger.service';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name);
+  constructor(
+    @Inject(CentralizedLoggerService)
+    private readonly logger: CentralizedLoggerService,
+  ) {
+    this.logger.setContext(AllExceptionsFilter.name);
+  }
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -51,10 +57,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }),
     };
 
-   
+    // Log the error with enhanced context
     this.logger.error(
-      `${request.method} ${request.url} - ${status} - ${message}`,
-      exception instanceof Error ? exception.stack : undefined,
+      `Unhandled exception: ${message}`,
+      exception instanceof Error ? exception : new Error(message),
+      {
+        method: request.method,
+        url: request.url,
+        statusCode: status,
+        ip: request.ip,
+        userAgent: request.get('User-Agent'),
+        requestId: request.headers['x-request-id'] as string,
+      },
     );
 
     response.status(status).json(errorResponse);
