@@ -75,11 +75,13 @@ describe('CentralizedLoggerService Performance', () => {
           url: '/api/complex-operation',
           headers: {
             'user-agent': 'Mozilla/5.0 (Test Browser)',
-            'accept': 'application/json',
+            accept: 'application/json',
             'content-type': 'application/json',
           },
           body: {
-            data: Array(100).fill(0).map((_, i) => ({ id: i, value: `item-${i}` })),
+            data: Array(100)
+              .fill(0)
+              .map((_, i) => ({ id: i, value: `item-${i}` })),
           },
         },
         metadata: {
@@ -119,18 +121,20 @@ describe('CentralizedLoggerService Performance', () => {
       (logger as any).logger = mockLogger;
 
       // Create multiple concurrent logging operations
-      const promises = Array(50).fill(0).map(async (_, i) => {
-        return new Promise<void>((resolve) => {
-          setTimeout(() => {
-            logger.info(`Concurrent message ${i}`, {
-              threadId: i,
-              operation: 'concurrent_test',
-              timestamp: new Date().toISOString(),
-            });
-            resolve();
-          }, Math.random() * 10); // Random delay up to 10ms
+      const promises = Array(50)
+        .fill(0)
+        .map(async (_, i) => {
+          return new Promise<void>((resolve) => {
+            setTimeout(() => {
+              logger.info(`Concurrent message ${i}`, {
+                threadId: i,
+                operation: 'concurrent_test',
+                timestamp: new Date().toISOString(),
+              });
+              resolve();
+            }, Math.random() * 10); // Random delay up to 10ms
+          });
         });
-      });
 
       await Promise.all(promises);
 
@@ -146,9 +150,9 @@ describe('CentralizedLoggerService Performance', () => {
       const initialMemory = process.memoryUsage().heapUsed;
 
       // Create multiple logger instances
-      const loggers = Array(100).fill(0).map((_, i) => 
-        new CentralizedLoggerService(`TestLogger${i}`)
-      );
+      const loggers = Array(100)
+        .fill(0)
+        .map((_, i) => new CentralizedLoggerService(`TestLogger${i}`));
 
       // Use each logger
       loggers.forEach((loggerInstance, i) => {

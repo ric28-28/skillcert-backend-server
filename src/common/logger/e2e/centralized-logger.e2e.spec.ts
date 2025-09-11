@@ -1,7 +1,7 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Injectable, Inject } from '@nestjs/common';
-import { CentralizedLoggerService } from '../services/centralized-logger.service';
 import { LoggerModule } from '../logger.module';
+import { CentralizedLoggerService } from '../services/centralized-logger.service';
 
 // Test service that uses the logger
 @Injectable()
@@ -15,28 +15,31 @@ class TestLoggerService {
 
   async performOperation(userId: string, operation: string): Promise<void> {
     this.logger.info('Starting operation', { userId, operation });
-    
+
     try {
       // Simulate some work
       this.logger.debug('Processing operation details', { userId, step: 1 });
-      
+
       if (operation === 'fail') {
         throw new Error('Simulated operation failure');
       }
-      
+
       this.logger.logBusinessEvent('operation_completed', {
         userId,
         operation,
         success: true,
       });
-      
-      this.logger.info('Operation completed successfully', { userId, operation });
+
+      this.logger.info('Operation completed successfully', {
+        userId,
+        operation,
+      });
     } catch (error) {
-      this.logger.error(
-        'Operation failed',
-        error as Error,
-        { userId, operation, step: 'error_handling' }
-      );
+      this.logger.error('Operation failed', error as Error, {
+        userId,
+        operation,
+        step: 'error_handling',
+      });
       throw error;
     }
   }
@@ -70,7 +73,9 @@ describe('CentralizedLoggerService E2E', () => {
     }).compile();
 
     testService = module.get<TestLoggerService>(TestLoggerService);
-    loggerService = module.get<CentralizedLoggerService>(CentralizedLoggerService);
+    loggerService = module.get<CentralizedLoggerService>(
+      CentralizedLoggerService,
+    );
   });
 
   afterEach(async () => {
@@ -87,19 +92,24 @@ describe('CentralizedLoggerService E2E', () => {
     it('should log throughout service operation lifecycle', async () => {
       const infoSpy = jest.spyOn(loggerService, 'info').mockImplementation();
       const debugSpy = jest.spyOn(loggerService, 'debug').mockImplementation();
-      const businessEventSpy = jest.spyOn(loggerService, 'logBusinessEvent').mockImplementation();
+      const businessEventSpy = jest
+        .spyOn(loggerService, 'logBusinessEvent')
+        .mockImplementation();
 
       await testService.performOperation('user123', 'create_account');
 
       // Verify logging sequence
       expect(infoSpy).toHaveBeenCalledWith(
         'Starting operation',
-        expect.objectContaining({ userId: 'user123', operation: 'create_account' })
+        expect.objectContaining({
+          userId: 'user123',
+          operation: 'create_account',
+        }),
       );
 
       expect(debugSpy).toHaveBeenCalledWith(
         'Processing operation details',
-        expect.objectContaining({ userId: 'user123', step: 1 })
+        expect.objectContaining({ userId: 'user123', step: 1 }),
       );
 
       expect(businessEventSpy).toHaveBeenCalledWith(
@@ -108,12 +118,15 @@ describe('CentralizedLoggerService E2E', () => {
           userId: 'user123',
           operation: 'create_account',
           success: true,
-        })
+        }),
       );
 
       expect(infoSpy).toHaveBeenCalledWith(
         'Operation completed successfully',
-        expect.objectContaining({ userId: 'user123', operation: 'create_account' })
+        expect.objectContaining({
+          userId: 'user123',
+          operation: 'create_account',
+        }),
       );
     });
 
@@ -121,7 +134,7 @@ describe('CentralizedLoggerService E2E', () => {
       const errorSpy = jest.spyOn(loggerService, 'error').mockImplementation();
 
       await expect(
-        testService.performOperation('user456', 'fail')
+        testService.performOperation('user456', 'fail'),
       ).rejects.toThrow('Simulated operation failure');
 
       expect(errorSpy).toHaveBeenCalledWith(
@@ -131,12 +144,14 @@ describe('CentralizedLoggerService E2E', () => {
           userId: 'user456',
           operation: 'fail',
           step: 'error_handling',
-        })
+        }),
       );
     });
 
     it('should log database operations', async () => {
-      const dbSpy = jest.spyOn(loggerService, 'logDatabaseOperation').mockImplementation();
+      const dbSpy = jest
+        .spyOn(loggerService, 'logDatabaseOperation')
+        .mockImplementation();
 
       await testService.performDatabaseOperation('users', 'INSERT');
 
@@ -145,14 +160,20 @@ describe('CentralizedLoggerService E2E', () => {
         'users',
         expect.objectContaining({
           timestamp: expect.any(String),
-        })
+        }),
       );
     });
 
     it('should log validation errors', () => {
-      const validationSpy = jest.spyOn(loggerService, 'logValidationError').mockImplementation();
+      const validationSpy = jest
+        .spyOn(loggerService, 'logValidationError')
+        .mockImplementation();
 
-      const result = testService.validateInput('email', 'invalid', 'must be valid email');
+      const result = testService.validateInput(
+        'email',
+        'invalid',
+        'must be valid email',
+      );
 
       expect(result).toBe(false);
       expect(validationSpy).toHaveBeenCalledWith(
@@ -161,7 +182,7 @@ describe('CentralizedLoggerService E2E', () => {
         'must be valid email',
         expect.objectContaining({
           validationStep: 'input_check',
-        })
+        }),
       );
     });
   });
@@ -170,7 +191,7 @@ describe('CentralizedLoggerService E2E', () => {
     it('should maintain different contexts for different services', () => {
       // Create another logger instance with different context
       const anotherLogger = new CentralizedLoggerService('AnotherService');
-      
+
       expect(loggerService.getContext()).toBe('Application');
       expect(anotherLogger.getContext()).toBe('AnotherService');
     });
@@ -194,8 +215,12 @@ describe('CentralizedLoggerService E2E', () => {
 
   describe('HTTP Request/Response Logging', () => {
     it('should format HTTP request and response logs correctly', () => {
-      const httpRequestSpy = jest.spyOn(loggerService, 'logHttpRequest').mockImplementation();
-      const httpResponseSpy = jest.spyOn(loggerService, 'logHttpResponse').mockImplementation();
+      const httpRequestSpy = jest
+        .spyOn(loggerService, 'logHttpRequest')
+        .mockImplementation();
+      const httpResponseSpy = jest
+        .spyOn(loggerService, 'logHttpResponse')
+        .mockImplementation();
 
       // Simulate HTTP request logging
       loggerService.logHttpRequest('POST', '/api/users', {
@@ -217,7 +242,7 @@ describe('CentralizedLoggerService E2E', () => {
           userId: 'user789',
           requestId: 'req-123',
           ip: '192.168.1.100',
-        })
+        }),
       );
 
       expect(httpResponseSpy).toHaveBeenCalledWith(
@@ -228,7 +253,7 @@ describe('CentralizedLoggerService E2E', () => {
         expect.objectContaining({
           userId: 'user789',
           requestId: 'req-123',
-        })
+        }),
       );
     });
   });

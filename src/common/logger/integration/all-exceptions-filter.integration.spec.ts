@@ -1,8 +1,8 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AllExceptionsFilter } from '../../filters/all-exceptions.filter';
-import { CentralizedLoggerService } from '../services/centralized-logger.service';
 import { LoggerModule } from '../logger.module';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { CentralizedLoggerService } from '../services/centralized-logger.service';
 
 describe('AllExceptionsFilter Integration', () => {
   let filter: AllExceptionsFilter;
@@ -16,7 +16,9 @@ describe('AllExceptionsFilter Integration', () => {
     }).compile();
 
     filter = module.get<AllExceptionsFilter>(AllExceptionsFilter);
-    loggerService = module.get<CentralizedLoggerService>(CentralizedLoggerService);
+    loggerService = module.get<CentralizedLoggerService>(
+      CentralizedLoggerService,
+    );
   });
 
   afterEach(async () => {
@@ -69,7 +71,7 @@ describe('AllExceptionsFilter Integration', () => {
         ip: '127.0.0.1',
         userAgent: 'Mozilla/5.0',
         requestId: 'test-request-id',
-      })
+      }),
     );
 
     errorSpy.mockRestore();

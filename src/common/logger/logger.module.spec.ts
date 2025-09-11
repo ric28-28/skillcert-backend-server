@@ -11,7 +11,9 @@ describe('LoggerModule', () => {
       imports: [LoggerModule],
     }).compile();
 
-    loggerService = module.get<CentralizedLoggerService>(CentralizedLoggerService);
+    loggerService = module.get<CentralizedLoggerService>(
+      CentralizedLoggerService,
+    );
   });
 
   afterEach(async () => {

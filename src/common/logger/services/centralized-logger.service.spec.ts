@@ -1,6 +1,6 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CentralizedLoggerService } from './centralized-logger.service';
-import { Logger } from '@nestjs/common';
 
 // Mock the Logger class
 jest.mock('@nestjs/common', () => ({
@@ -60,33 +60,33 @@ describe('CentralizedLoggerService', () => {
     it('should log info messages', () => {
       const message = 'Test info message';
       const context = { userId: 'user123', operation: 'test' };
-      
+
       service.info(message, context);
-      
+
       expect(mockLogger.log).toHaveBeenCalledWith(
-        expect.stringContaining(message)
+        expect.stringContaining(message),
       );
     });
 
     it('should log debug messages', () => {
       const message = 'Test debug message';
       const context = { debug: true };
-      
+
       service.debug(message, context);
-      
+
       expect(mockLogger.debug).toHaveBeenCalledWith(
-        expect.stringContaining(message)
+        expect.stringContaining(message),
       );
     });
 
     it('should log warning messages', () => {
       const message = 'Test warning message';
       const context = { threshold: 90 };
-      
+
       service.warn(message, context);
-      
+
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining(message)
+        expect.stringContaining(message),
       );
     });
 
@@ -94,24 +94,24 @@ describe('CentralizedLoggerService', () => {
       const message = 'Test error message';
       const error = new Error('Test error');
       const context = { operation: 'test_operation' };
-      
+
       service.error(message, error, context);
-      
+
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining(message),
-        error.stack
+        error.stack,
       );
     });
 
     it('should log error messages without error object', () => {
       const message = 'Test error message without error object';
       const context = { operation: 'test_operation' };
-      
+
       service.error(message, undefined, context);
-      
+
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining(message),
-        undefined
+        undefined,
       );
     });
   });
@@ -126,11 +126,11 @@ describe('CentralizedLoggerService', () => {
         responseTime: 150,
         userId: 'user123',
         requestId: 'req-456',
-        ip: '192.168.1.100'
+        ip: '192.168.1.100',
       };
-      
+
       service.info(message, context);
-      
+
       const calledMessage = mockLogger.log.mock.calls[0][0];
       expect(calledMessage).toContain('GET /api/users');
       expect(calledMessage).toContain('User: user123');
@@ -144,11 +144,11 @@ describe('CentralizedLoggerService', () => {
       const message = 'Distributed trace';
       const context = {
         correlationId: 'trace-123',
-        operation: 'user_service'
+        operation: 'user_service',
       };
-      
+
       service.info(message, context);
-      
+
       const calledMessage = mockLogger.log.mock.calls[0][0];
       expect(calledMessage).toContain('CorrelationID: trace-123');
     });
@@ -158,11 +158,11 @@ describe('CentralizedLoggerService', () => {
       const context = {
         customField1: 'value1',
         customField2: 42,
-        customField3: true
+        customField3: true,
       };
-      
+
       service.info(message, context);
-      
+
       const calledMessage = mockLogger.log.mock.calls[0][0];
       expect(calledMessage).toContain('"customField1":"value1"');
       expect(calledMessage).toContain('"customField2":42');
@@ -182,16 +182,16 @@ describe('CentralizedLoggerService', () => {
       const method = 'POST';
       const url = '/api/users';
       const context = { userId: 'user123' };
-      
+
       service.logHttpRequest(method, url, context);
-      
+
       expect(service.info).toHaveBeenCalledWith(
         `${method} ${url} - Request started`,
         expect.objectContaining({
           method,
           url,
           ...context,
-        })
+        }),
       );
     });
 
@@ -201,9 +201,9 @@ describe('CentralizedLoggerService', () => {
       const statusCode = 200;
       const responseTime = 120;
       const context = { userId: 'user123' };
-      
+
       service.logHttpResponse(method, url, statusCode, responseTime, context);
-      
+
       expect(service.info).toHaveBeenCalledWith(
         `${method} ${url} - Request completed`,
         expect.objectContaining({
@@ -212,7 +212,7 @@ describe('CentralizedLoggerService', () => {
           statusCode,
           responseTime,
           ...context,
-        })
+        }),
       );
     });
 
@@ -222,9 +222,9 @@ describe('CentralizedLoggerService', () => {
       const statusCode = 500;
       const responseTime = 300;
       const context = { userId: 'user123' };
-      
+
       service.logHttpResponse(method, url, statusCode, responseTime, context);
-      
+
       expect(service.error).toHaveBeenCalledWith(
         `${method} ${url} - Request completed`,
         undefined,
@@ -234,7 +234,7 @@ describe('CentralizedLoggerService', () => {
           statusCode,
           responseTime,
           ...context,
-        })
+        }),
       );
     });
 
@@ -243,9 +243,9 @@ describe('CentralizedLoggerService', () => {
       const url = '/api/users/invalid';
       const statusCode = 404;
       const responseTime = 50;
-      
+
       service.logHttpResponse(method, url, statusCode, responseTime);
-      
+
       expect(service.error).toHaveBeenCalledWith(
         `${method} ${url} - Request completed`,
         undefined,
@@ -254,7 +254,7 @@ describe('CentralizedLoggerService', () => {
           url,
           statusCode,
           responseTime,
-        })
+        }),
       );
     });
 
@@ -262,16 +262,16 @@ describe('CentralizedLoggerService', () => {
       const event = 'user_registered';
       const details = { userId: 'user123', email: 'test@example.com' };
       const context = { source: 'registration_service' };
-      
+
       service.logBusinessEvent(event, details, context);
-      
+
       expect(service.info).toHaveBeenCalledWith(
         `Business Event: ${event}`,
         expect.objectContaining({
           event,
           details,
           ...context,
-        })
+        }),
       );
     });
 
@@ -279,16 +279,16 @@ describe('CentralizedLoggerService', () => {
       const operation = 'INSERT';
       const entity = 'users';
       const context = { userId: 'user123', recordCount: 1 };
-      
+
       service.logDatabaseOperation(operation, entity, context);
-      
+
       expect(service.debug).toHaveBeenCalledWith(
         `Database ${operation} on ${entity}`,
         expect.objectContaining({
           operation,
           entity,
           ...context,
-        })
+        }),
       );
     });
 
@@ -297,9 +297,9 @@ describe('CentralizedLoggerService', () => {
       const value = 'invalid-email';
       const rule = 'must be valid email format';
       const context = { userId: 'user123' };
-      
+
       service.logValidationError(field, value, rule, context);
-      
+
       expect(service.warn).toHaveBeenCalledWith(
         `Validation failed for field '${field}' with value '${value}' - Rule: ${rule}`,
         expect.objectContaining({
@@ -307,7 +307,7 @@ describe('CentralizedLoggerService', () => {
           value,
           rule,
           ...context,
-        })
+        }),
       );
     });
   });
@@ -316,10 +316,10 @@ describe('CentralizedLoggerService', () => {
     it('should create child logger with different context', () => {
       const parentContext = 'ParentService';
       const childContext = 'ChildService';
-      
+
       service.setContext(parentContext);
       const childLogger = service.createChildLogger(childContext);
-      
+
       expect(service.getContext()).toBe(parentContext);
       expect(childLogger.getContext()).toBe(childContext);
       expect(childLogger).toBeInstanceOf(CentralizedLoggerService);
@@ -328,9 +328,9 @@ describe('CentralizedLoggerService', () => {
     it('should create independent child logger instances', () => {
       const child1 = service.createChildLogger('Child1');
       const child2 = service.createChildLogger('Child2');
-      
+
       child1.setContext('ModifiedChild1');
-      
+
       expect(child1.getContext()).toBe('ModifiedChild1');
       expect(child2.getContext()).toBe('Child2');
       expect(service.getContext()).toBe('Application'); // Original unchanged
