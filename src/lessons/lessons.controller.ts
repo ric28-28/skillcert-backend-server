@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { Lesson } from '../entities/lesson.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
@@ -26,8 +27,9 @@ export class LessonsController {
   }
 
   @Get()
-  async findAll(): Promise<Lesson[]> {
-    return this.lessonsService.findAll();
+  async findAll( @Query('page') page = 1,
+    @Query('limit') limit = 10,): Promise<Lesson[]> {
+     return this.lessonsService.findAll(page, limit);
   }
 
   @Get(':id')
@@ -37,9 +39,9 @@ export class LessonsController {
 
   @Get('module/:moduleId')
   async findByModuleId(
-    @Param('moduleId', ParseUUIDPipe) moduleId: string,
+    @Param('moduleId', ParseUUIDPipe) moduleId: string,   @Query('page') page = 1, @Query('limit') limit = 10,
   ): Promise<Lesson[]> {
-    return this.lessonsService.findByModuleId(moduleId);
+    return this.lessonsService.findByModuleId(moduleId, page, limit);
   }
 
   @Patch(':id')
