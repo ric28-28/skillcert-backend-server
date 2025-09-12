@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
+import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,12 +15,13 @@ async function bootstrap() {
     new AllExceptionsFilter()
   );
 
-  // Apply global validation pipe
+  // Apply global validation pipe with best-practice options
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
 
