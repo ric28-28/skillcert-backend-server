@@ -18,9 +18,10 @@ export class LessonsService {
     return await this.lessonRepository.save(lesson);
   }
 
-  async findAll(): Promise<Lesson[]> {
+  async findAll(page: number = 1, limit: number = 10): Promise<Lesson[]> {
+    const skip = (page - 1) * limit;
     return await this.lessonRepository.find({
-      relations: ['module'],
+      relations: ['module'], skip, take: limit
     });
   }
 
@@ -37,10 +38,13 @@ export class LessonsService {
     return lesson;
   }
 
-  async findByModuleId(moduleId: string): Promise<Lesson[]> {
+  async findByModuleId(moduleId: string, page: number = 1, limit: number = 10): Promise<Lesson[]> {
+    const skip = (page - 1) * limit;
     return await this.lessonRepository.find({
       where: { module_id: moduleId },
       order: { created_at: 'ASC' },
+skip,
+take: limit
     });
   }
 

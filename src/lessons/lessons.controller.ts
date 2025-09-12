@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Lesson } from '../entities/lesson.entity';
@@ -45,23 +46,6 @@ export class LessonsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all lessons' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lessons retrieved successfully',
-    type: [Lesson],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Invalid request' },
-        statusCode: { type: 'number', example: 400 },
-      },
-    },
-  })
   async findAll(): Promise<Lesson[]> {
     return this.lessonsService.findAll();
   }
@@ -107,9 +91,9 @@ export class LessonsController {
     },
   })
   async findByModuleId(
-    @Param('moduleId', ParseUUIDPipe) moduleId: string,
+    @Param('moduleId', ParseUUIDPipe) moduleId: string,   @Query('page') page = 1, @Query('limit') limit = 10,
   ): Promise<Lesson[]> {
-    return this.lessonsService.findByModuleId(moduleId);
+    return this.lessonsService.findByModuleId(moduleId, page, limit);
   }
 
   @Patch(':id')

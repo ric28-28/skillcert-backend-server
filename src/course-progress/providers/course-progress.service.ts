@@ -10,6 +10,7 @@ import {
   CourseProgress,
   ProgressStatus,
 } from '../entities/course-progress.entity';
+import { PERCENTAGE_MULTIPLIER } from '../../common/constants';
 
 @Injectable()
 export class CourseProgressService {
@@ -115,7 +116,7 @@ export class CourseProgressService {
       },
     });
 
-    const completionRate = (completed / total) * 100;
+    const completionRate = (completed / total) * PERCENTAGE_MULTIPLIER;
 
     return {
       enrollmentId,
@@ -136,7 +137,7 @@ export class CourseProgressService {
       totalProgress,
       completed,
       overallCompletionRate:
-        totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
+        totalProgress > 0 ? (completed / totalProgress) * PERCENTAGE_MULTIPLIER : 0,
     };
   }
 }

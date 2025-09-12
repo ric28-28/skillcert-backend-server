@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
+import { COLUMN_LENGTHS } from '../../common/constants';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -21,7 +22,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.USER_NAME })
   name: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })

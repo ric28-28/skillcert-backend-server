@@ -17,6 +17,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
+import { TEST_DATA } from '../common/constants';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -63,7 +64,7 @@ export class AdminController {
       message: 'Welcome to Admin Dashboard',
       data: {
         totalUsers: 150,
-        totalCourses: 25,
+        totalCourses: TEST_DATA.TOTAL_COURSES,
         totalEnrollments: 1200,
         systemStatus: 'Healthy',
       },
