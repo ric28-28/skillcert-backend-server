@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { MIN_TOKEN_LENGTH } from '../constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -24,7 +25,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = authHeader.substring(7);
-    if (!token || token.length < 10) {
+    if (!token || token.length < MIN_TOKEN_LENGTH) {
       throw new UnauthorizedException('Invalid token');
     }
 

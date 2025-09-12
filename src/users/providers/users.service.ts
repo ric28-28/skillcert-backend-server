@@ -9,6 +9,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import type { User } from '../entities/user.entity';
 import { UsersRepository } from '../users.repository';
+import { PASSWORD_SALT_ROUNDS } from '../../common/constants';
 
 @Injectable()
 export class UsersService {
@@ -24,10 +25,9 @@ export class UsersService {
     }
 
     // Hash password
-    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(
       createUserDto.password,
-      saltRounds,
+      PASSWORD_SALT_ROUNDS,
     );
 
     const userWithHashedPassword = {
@@ -79,10 +79,9 @@ export class UsersService {
 
     // Hash password if it's being updated
     if (updateUserDto.password) {
-      const saltRounds = 10;
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
-        saltRounds,
+        PASSWORD_SALT_ROUNDS,
       );
     }
 

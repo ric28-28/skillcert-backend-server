@@ -13,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { QuestionResultDto, QuizResultDto } from './dto/quiz-result.dto';
 import { QuestionResponseDto, SubmitQuizDto } from './dto/submit-quiz.dto';
+import { PERCENTAGE_MULTIPLIER, QUIZ_PASSING_THRESHOLD } from '../common/constants';
 import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
@@ -232,9 +233,9 @@ export class QuizService {
     // Calculate final score and percentage
     const percentage =
       quiz.questions.length > 0
-        ? (totalScore / quiz.questions.length) * 100
+        ? (totalScore / quiz.questions.length) * PERCENTAGE_MULTIPLIER
         : 0;
-    const passed = percentage >= 70; // 70% passing threshold
+    const passed = percentage >= QUIZ_PASSING_THRESHOLD; // 70% passing threshold
 
     // Update quiz attempt
     quizAttempt.score = totalScore;
