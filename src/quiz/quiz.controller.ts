@@ -8,7 +8,12 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { Roles } from '../common/decorators/roles.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { QuizResultDto } from './dto/quiz-result.dto';
@@ -17,8 +22,10 @@ import { QuizAttempt } from './entities/quiz-attempt.entity';
 import { QuizService } from './quiz.service';
 
 @Controller('quizzes')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class QuizController {
-  constructor(private readonly quizService: QuizService) { }
+  constructor(private readonly quizService: QuizService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

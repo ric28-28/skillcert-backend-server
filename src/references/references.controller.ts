@@ -9,13 +9,20 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { Roles } from '../common/decorators/roles.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 import { Reference } from '../entities/reference.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
 import { UpdateReferenceDto } from './dto/update-reference.dto';
 import { ReferencesService } from './references.service';
 
 @Controller('references')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class ReferencesController {
   constructor(private readonly referencesService: ReferencesService) {}
 
