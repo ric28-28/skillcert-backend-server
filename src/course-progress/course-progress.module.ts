@@ -18,8 +18,8 @@ import { CourseProgressService } from './providers/course-progress.service';
       QuizAttempt,
     ]),
   ],
-  providers: [CourseProgressService],
   controllers: [CourseProgressController],
+  providers: [CourseProgressService],
   exports: [CourseProgressService],
 })
 export class CourseProgressModule { }
