@@ -1,8 +1,30 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('public')
+@ApiTags('public')
 export class PublicController {
   @Get('info')
+  @ApiOperation({ summary: 'Get public application information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Public information retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: { message: { type: 'string' }, data: { type: 'object' } },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   getPublicInfo() {
     return {

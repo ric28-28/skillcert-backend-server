@@ -8,21 +8,57 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { Module } from './entities/module.entity';
 import { ModulesService } from './modules.service';
 
 @Controller('modules')
+@ApiTags('modules')
 export class ModulesController {
   constructor(private readonly modulesService: ModulesService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new module' })
+  @ApiResponse({
+    status: 201,
+    description: 'Module created successfully',
+    type: Module,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Validation failed' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   async create(@Body() createModuleDto: CreateModuleDto): Promise<Module> {
     return await this.modulesService.create(createModuleDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all modules' })
+  @ApiResponse({
+    status: 200,
+    description: 'Modules retrieved successfully',
+    type: [Module],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   async findAll(): Promise<Module[]> {
     return await this.modulesService.findAll();
   }

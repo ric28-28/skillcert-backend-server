@@ -10,14 +10,46 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
 
 @Controller('courses')
+@ApiTags('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new course' })
+  @ApiResponse({
+    status: 201,
+    description: 'Course created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'uuid' },
+        title: { type: 'string', example: 'Introduction to Programming' },
+        description: {
+          type: 'string',
+          example: 'Learn the basics of programming',
+        },
+        createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Validation failed' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() createCourseDto: { title: string; description?: string },
@@ -26,18 +58,116 @@ export class CoursesController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all courses' })
+  @ApiResponse({
+    status: 200,
+    description: 'Courses retrieved successfully',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', example: 'uuid' },
+          title: { type: 'string', example: 'Introduction to Programming' },
+          description: {
+            type: 'string',
+            example: 'Learn the basics of programming',
+          },
+          createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+          updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   findAll(): Promise<Course[]> {
     return this.coursesService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get course by ID' })
+  @ApiParam({ name: 'id', description: 'Course ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Course retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'uuid' },
+        title: { type: 'string', example: 'Introduction to Programming' },
+        description: {
+          type: 'string',
+          example: 'Learn the basics of programming',
+        },
+        createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid course ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Course not found' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Course> {
     return this.coursesService.findOne(id);
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update course by ID' })
+  @ApiParam({ name: 'id', description: 'Course ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Course updated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'uuid' },
+        title: { type: 'string', example: 'Advanced Programming' },
+        description: {
+          type: 'string',
+          example: 'Learn advanced programming concepts',
+        },
+        createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        updatedAt: { type: 'string', example: '2023-01-02T00:00:00.000Z' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data or course ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Course not found or validation failed',
+        },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -47,6 +177,24 @@ export class CoursesController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete course by ID' })
+  @ApiParam({ name: 'id', description: 'Course ID' })
+  @ApiResponse({
+    status: 204,
+    description: 'Course deleted successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid course ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Course not found' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.coursesService.remove(id);

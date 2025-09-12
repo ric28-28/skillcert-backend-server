@@ -7,15 +7,55 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 
 @Controller('admin')
+@ApiTags('admin')
+@ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
 export class AdminController {
   @Get('dashboard')
+  @ApiOperation({ summary: 'Get admin dashboard statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dashboard data retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Welcome to Admin Dashboard' },
+        data: {
+          type: 'object',
+          properties: {
+            totalUsers: { type: 'number', example: 150 },
+            totalCourses: { type: 'number', example: 25 },
+            totalEnrollments: { type: 'number', example: 1200 },
+            systemStatus: { type: 'string', example: 'Healthy' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   getDashboard() {
@@ -31,6 +71,49 @@ export class AdminController {
   }
 
   @Get('users')
+  @ApiOperation({ summary: 'Get all users for admin management' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'User management - Admin/Moderator access required',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            users: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', example: '1' },
+                  name: { type: 'string', example: 'John Doe' },
+                  email: { type: 'string', example: 'john@example.com' },
+                  role: { type: 'string', example: 'user' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
   @HttpCode(HttpStatus.OK)
   getAllUsers() {
@@ -56,6 +139,39 @@ export class AdminController {
   }
 
   @Post('system/maintenance')
+  @ApiOperation({ summary: 'Start system maintenance mode' })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance mode started successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'System maintenance started - Admin access required',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            status: { type: 'string', example: 'Maintenance mode activated' },
+            timestamp: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   startMaintenance() {
@@ -69,6 +185,38 @@ export class AdminController {
   }
 
   @Delete('users/:id')
+  @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'User deletion - Admin access required',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            status: { type: 'string', example: 'User deleted successfully' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   deleteUser() {
@@ -81,6 +229,45 @@ export class AdminController {
   }
 
   @Get('analytics')
+  @ApiOperation({ summary: 'Get system analytics data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Analytics data retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Analytics data - Admin/Moderator access required',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            monthlyStats: {
+              type: 'object',
+              properties: {
+                newUsers: { type: 'number', example: 45 },
+                courseCompletions: { type: 'number', example: 120 },
+                revenue: { type: 'number', example: 15000 },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
   @HttpCode(HttpStatus.OK)
   getAnalytics() {
