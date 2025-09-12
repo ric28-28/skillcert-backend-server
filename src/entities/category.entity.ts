@@ -7,19 +7,20 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Course } from '../courses/entities/course.entity';
+import { COLUMN_LENGTHS } from '../common/constants';
 
 @Entity('categories')
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.CATEGORY_NAME, unique: true })
   name: string;
 
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'varchar', length: 7, nullable: true })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.CATEGORY_COLOR, nullable: true })
   color: string; // Hex color for UI display
 
   @Column({ type: 'boolean', default: true })
