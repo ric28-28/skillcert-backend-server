@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -36,16 +37,27 @@ export class UsersController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(): Promise<{
+  async findAll(
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
+  ): Promise<{
     message: string;
     data: User[];
-    count: number;
+    total: number;
+    page: number;
+    limit: number;
   }> {
-    const users = await this.usersService.findAll();
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const { users, total } = await this.usersService.findAll(pageNumber, limitNumber);
+
     return {
       message: 'Users retrieved successfully',
       data: users,
-      count: users.length,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
     };
   }
 

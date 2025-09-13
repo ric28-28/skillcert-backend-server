@@ -38,8 +38,8 @@ export class UsersService {
     return await this.usersRepository.create(userWithHashedPassword);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.findAll();
+  async findAll(page?: number, limit?: number): Promise<{ users: User[]; total: number }> {
+    return await this.usersRepository.findAll(page, limit);
   }
 
   async findById(id: string): Promise<User> {

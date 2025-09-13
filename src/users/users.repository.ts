@@ -17,10 +17,17 @@ export class UsersRepository {
     return await this.userRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({
+  async findAll(page?: number, limit?: number): Promise<{ users: User[]; total: number }> {
+    const skip = page && limit ? (page - 1) * limit : undefined;
+    const take = limit;
+
+    const [users, total] = await this.userRepository.findAndCount({
       select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
+      skip,
+      take,
     });
+
+    return { users, total };
   }
 
   async findById(id: string): Promise<User | null> {
