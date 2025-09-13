@@ -30,6 +30,17 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       '@typescript-eslint/no-unused-vars': 'error',
+
+      // ESLint Strict Rules
+      'no-console': 'error',
+      'no-unused-vars': 'error',
+      'no-debugger': 'error',
+      'no-alert': 'error',
+      'no-var': 'error',
+      'no-duplicate-imports': 'error',
+      'no-undef': 'error',
+      'no-unreachable': 'error',
+      'no-unused-expressions': 'error',
     },
   },
 );

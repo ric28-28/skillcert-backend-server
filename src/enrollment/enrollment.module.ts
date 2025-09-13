@@ -8,8 +8,8 @@ import { EnrollmentService } from './providers/enrollment.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Enrollment, User, Course])],
-  providers: [EnrollmentService],
   controllers: [EnrollmentController],
+  providers: [EnrollmentService],
   exports: [EnrollmentService],
 })
 export class EnrollmentModule {}

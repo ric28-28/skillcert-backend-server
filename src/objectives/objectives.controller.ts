@@ -10,7 +10,12 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { Roles } from '../common/decorators/roles.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateObjectiveDto } from './dto/create-objective.dto';
 import { UpdateObjectiveDto } from './dto/update-objective.dto';
@@ -18,6 +23,8 @@ import { ObjectivesService } from './objectives.service';
 
 @Controller('objectives')
 @ApiTags('objectives')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class ObjectivesController {
   constructor(private readonly objectivesService: ObjectivesService) {}
 
