@@ -1,19 +1,29 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  ParseUUIDPipe,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { QuizService } from './quiz.service';
+import { Roles } from '../common/decorators/roles.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
+import { QuizResultDto } from './dto/quiz-result.dto';
 import { Quiz } from './entities/quiz.entity';
+import { QuizAttempt } from './entities/quiz-attempt.entity';
+import { QuizService } from './quiz.service';
 
 @Controller('quizzes')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
@@ -44,5 +54,29 @@ export class QuizController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.quizService.remove(id);
+  }
+
+  @Post('submit')
+  @HttpCode(HttpStatus.OK)
+  submitQuiz(@Body() submitQuizDto: SubmitQuizDto): Promise<QuizResultDto> {
+    return this.quizService.submitQuiz(submitQuizDto);
+  }
+
+  @Get('attempt/:userId/:quizId')
+  getUserQuizAttempt(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('quizId', ParseUUIDPipe) quizId: string,
+  ): Promise<QuizAttempt | null> {
+    return this.quizService.getUserQuizAttempt(userId, quizId);
+  }
+
+  @Get('passed/:userId/:quizId')
+  hasUserPassedQuiz(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('quizId', ParseUUIDPipe) quizId: string,
+  ): Promise<{ passed: boolean }> {
+    return this.quizService
+      .hasUserPassedQuiz(userId, quizId)
+      .then((passed) => ({ passed }));
   }
 }

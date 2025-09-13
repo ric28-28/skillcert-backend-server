@@ -1,12 +1,12 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Module } from './module.entity';
@@ -28,7 +28,9 @@ export class Course {
   @Column({ type: 'boolean', default: true })
   is_published: boolean;
 
-  @ManyToOne(() => Category, (category) => category.courses, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Category, (category) => category.courses, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 

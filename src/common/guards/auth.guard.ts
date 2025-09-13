@@ -1,19 +1,20 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { MIN_TOKEN_LENGTH } from '../constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    
+
     // For demonstration purposes, we'll check for a simple header
     // In a real implementation, you would validate JWT tokens here
     const authHeader = request.headers.authorization;
-    
+
     if (!authHeader) {
       throw new UnauthorizedException('Authorization header is required');
     }
@@ -24,7 +25,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = authHeader.substring(7);
-    if (!token || token.length < 10) {
+    if (!token || token.length < MIN_TOKEN_LENGTH) {
       throw new UnauthorizedException('Invalid token');
     }
 

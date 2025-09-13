@@ -1,21 +1,21 @@
 import {
   Controller,
-  Get,
-  Post,
   Delete,
-  UseGuards,
-  HttpStatus,
+  Get,
   HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
+import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
+import { TEST_DATA } from '../common/constants';
 
 @Controller('admin')
 @UseGuards(AuthGuard, RolesGuard)
 export class AdminController {
-  
   @Get('dashboard')
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -24,7 +24,7 @@ export class AdminController {
       message: 'Welcome to Admin Dashboard',
       data: {
         totalUsers: 150,
-        totalCourses: 25,
+        totalCourses: TEST_DATA.TOTAL_COURSES,
         totalEnrollments: 1200,
         systemStatus: 'Healthy',
       },
@@ -39,8 +39,18 @@ export class AdminController {
       message: 'User management - Admin/Moderator access required',
       data: {
         users: [
-          { id: '1', name: 'John Doe', email: 'john@example.com', role: 'user' },
-          { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'moderator' },
+          {
+            id: '1',
+            name: 'John Doe',
+            email: 'john@example.com',
+            role: 'user',
+          },
+          {
+            id: '2',
+            name: 'Jane Smith',
+            email: 'jane@example.com',
+            role: 'moderator',
+          },
         ],
       },
     };

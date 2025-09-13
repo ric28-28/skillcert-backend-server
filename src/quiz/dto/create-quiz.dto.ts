@@ -1,12 +1,12 @@
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
-  IsOptional,
   ValidateNested,
-  IsArray,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { CreateQuestionDto } from '../../question/dto/create-question.dto';
 
 export class CreateQuizDto {

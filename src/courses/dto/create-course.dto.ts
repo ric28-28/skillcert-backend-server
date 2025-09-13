@@ -1,14 +1,21 @@
-import { IsNotEmpty, IsString, IsUUID, MinLength, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  MinLength,
+  IsOptional,
+} from 'class-validator';
+import { VALIDATION_CONSTRAINTS } from '../../common/constants';
 
 export class CreateCourseDto {
   @IsNotEmpty()
   @IsString()
-  @MinLength(2)
+  @MinLength(VALIDATION_CONSTRAINTS.COURSE_TITLE_MIN_LENGTH)
   title: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(10)
+  @MinLength(VALIDATION_CONSTRAINTS.COURSE_DESCRIPTION_MIN_LENGTH)
   description: string;
 
   @IsNotEmpty()

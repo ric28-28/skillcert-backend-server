@@ -1,20 +1,20 @@
-
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  ParseUUIDPipe,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
-import { LessonsService } from './lessons.service';
+import { Lesson } from '../entities/lesson.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
-import { Lesson } from '../entities/lesson.entity';
+import { LessonsService } from './lessons.service';
 
 @Controller('lessons')
 export class LessonsController {
@@ -27,8 +27,9 @@ export class LessonsController {
   }
 
   @Get()
-  async findAll(): Promise<Lesson[]> {
-    return this.lessonsService.findAll();
+  async findAll( @Query('page') page = 1,
+    @Query('limit') limit = 10,): Promise<Lesson[]> {
+     return this.lessonsService.findAll(page, limit);
   }
 
   @Get(':id')
@@ -37,8 +38,10 @@ export class LessonsController {
   }
 
   @Get('module/:moduleId')
-  async findByModuleId(@Param('moduleId', ParseUUIDPipe) moduleId: string): Promise<Lesson[]> {
-    return this.lessonsService.findByModuleId(moduleId);
+  async findByModuleId(
+    @Param('moduleId', ParseUUIDPipe) moduleId: string,   @Query('page') page = 1, @Query('limit') limit = 10,
+  ): Promise<Lesson[]> {
+    return this.lessonsService.findByModuleId(moduleId, page, limit);
   }
 
   @Patch(':id')
@@ -55,7 +58,6 @@ export class LessonsController {
     await this.lessonsService.remove(id);
   }
 }
-
 
 // import {
 //   Controller,

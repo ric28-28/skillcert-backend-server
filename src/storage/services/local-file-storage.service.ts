@@ -1,14 +1,15 @@
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import 'multer';
 import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'node:fs/promises';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import {
   FileStorageInterface,
   FileUploadResult,
   SupportedFileTypes,
 } from '../interfaces/file-storage.interface';
-import * as fs from 'node:fs/promises';
-import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class LocalFileStorageService

@@ -1,7 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateQuestionDto } from '../../question/dto/create-question.dto';
 import { QuestionType } from '../../question/entities/question.entity';
 import { CreateQuizDto } from '../dto/create-quiz.dto';
-import { CreateQuestionDto } from '../../question/dto/create-question.dto';
 
 @Injectable()
 export class QuizValidationService {
@@ -26,7 +26,6 @@ export class QuizValidationService {
         `${questionPrefix}: Must have at least one answer`,
       );
     }
-
 
     switch (question.type) {
       case QuestionType.UNIQUE:

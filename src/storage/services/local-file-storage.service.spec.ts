@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { LocalFileStorageService } from './local-file-storage.service';
-import { SupportedFileTypes } from '../interfaces/file-storage.interface';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'node:fs/promises';
+import { SupportedFileTypes } from '../interfaces/file-storage.interface';
+import { LocalFileStorageService } from './local-file-storage.service';
 
 // Mock fs module
 jest.mock('node:fs/promises');
