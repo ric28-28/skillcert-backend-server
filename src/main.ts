@@ -12,12 +12,13 @@ async function bootstrap() {
   // Apply global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Apply global validation pipe
+  // Apply global validation pipe with best-practice options
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
 
