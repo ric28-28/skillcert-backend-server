@@ -1,5 +1,6 @@
 import 'multer';
 import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   FileStorageInterface,
   FileUploadResult,
@@ -13,13 +14,18 @@ import { v4 as uuidv4 } from 'uuid';
 export class LocalFileStorageService
   implements FileStorageInterface, OnModuleInit
 {
-  private readonly uploadPath = process.env.UPLOAD_PATH || './uploads';
-  private readonly baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-  private readonly maxFileSize = parseInt(
-    process.env.MAX_FILE_SIZE || '10485760',
-  ); // 10MB default
+  private readonly uploadPath: string;
+  private readonly baseUrl: string;
+  private readonly maxFileSize: number;
 
-  constructor() {}
+  constructor(private readonly configService: ConfigService) {
+    this.uploadPath =
+      this.configService.get<string>('UPLOAD_PATH') || './uploads';
+    this.baseUrl =
+      this.configService.get<string>('BASE_URL') || 'http://localhost:3000';
+    this.maxFileSize =
+      this.configService.get<number>('MAX_FILE_SIZE') || 10485760;
+  }
 
   async onModuleInit(): Promise<void> {
     // This guarantees the directory exists before handling requests.
