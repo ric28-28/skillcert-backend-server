@@ -1,4 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
@@ -6,11 +5,16 @@ import { AppModule } from './app.module';
 import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
 import { RequestTimeoutInterceptor } from './common/interceptors/request-timeout.interceptor';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
 
   // Apply global exception filters
   app.useGlobalFilters(new DatabaseExceptionFilter());
+
+  // Apply global exception filter
 
   // Apply global validation pipe with best-practice options
   app.useGlobalPipes(
@@ -21,6 +25,7 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
 
   // Apply request timeout interceptor
   app.useGlobalInterceptors(new RequestTimeoutInterceptor(5000));
@@ -37,4 +42,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();
+
