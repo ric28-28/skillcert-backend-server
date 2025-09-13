@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
 import { EnrollmentService } from '../providers/enrollment.service';
 
@@ -28,18 +28,36 @@ export class EnrollmentController {
 
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get user enrollments' })
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    type: 'string',
+    example: 'user123',
+    description: 'The unique identifier of the user',
+  })
   @ApiResponse({
     status: 200,
     description: 'Enrollments retrieved successfully',
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad request',
+    description: 'Bad request - Invalid input',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid userId format' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
     schema: {
       type: 'object',
       properties: {
         message: { type: 'string', example: 'User not found' },
-        statusCode: { type: 'number', example: 400 },
+        statusCode: { type: 'number', example: 404 },
       },
     },
   })

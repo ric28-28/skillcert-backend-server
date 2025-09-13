@@ -81,8 +81,19 @@ export class QuizController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Quiz not found' },
+        message: { type: 'string', example: 'Invalid quiz ID' },
         statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found - Quiz not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Quiz not found' },
+        statusCode: { type: 'number', example: 404 },
       },
     },
   })
@@ -106,8 +117,19 @@ export class QuizController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Quiz not found' },
+        message: { type: 'string', example: 'Invalid quiz ID' },
         statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Quiz not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Quiz not found' },
+        statusCode: { type: 'number', example: 404 },
       },
     },
   })

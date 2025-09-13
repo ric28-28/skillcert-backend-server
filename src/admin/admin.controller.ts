@@ -4,20 +4,22 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { TEST_DATA } from '../common/constants';
 import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
-import { TEST_DATA } from '../common/constants';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -187,24 +189,15 @@ export class AdminController {
 
   @Delete('users/:id')
   @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the user to delete',
+    type: 'string',
+    example: '1',
+  })
   @ApiResponse({
-    status: 200,
+    status: 204,
     description: 'User deleted successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'User deletion - Admin access required',
-        },
-        data: {
-          type: 'object',
-          properties: {
-            status: { type: 'string', example: 'User deleted successfully' },
-          },
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 400,
@@ -219,14 +212,11 @@ export class AdminController {
     },
   })
   @Roles(UserRole.ADMIN)
-  @HttpCode(HttpStatus.OK)
-  deleteUser() {
-    return {
-      message: 'User deletion - Admin access required',
-      data: {
-        status: 'User deleted successfully',
-      },
-    };
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteUser(@Param('id') id: string) {
+    // TODO: Implement actual user deletion logic using the id parameter
+    console.log(`Deleting user with ID: ${id}`);
+    return;
   }
 
   @Get('analytics')
