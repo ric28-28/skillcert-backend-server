@@ -10,35 +10,100 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateQuizDto } from './dto/create-quiz.dto';
-import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { QuizResultDto } from './dto/quiz-result.dto';
-import { Quiz } from './entities/quiz.entity';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { QuizAttempt } from './entities/quiz-attempt.entity';
+import { Quiz } from './entities/quiz.entity';
 import { QuizService } from './quiz.service';
 
 @Controller('quizzes')
+@ApiTags('quizzes')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new quiz' })
+  @ApiResponse({
+    status: 201,
+    description: 'Quiz created successfully',
+    type: Quiz,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Validation failed' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createQuizDto: CreateQuizDto): Promise<Quiz> {
     return this.quizService.create(createQuizDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all quizzes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quizzes retrieved successfully',
+    type: [Quiz],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   findAll(): Promise<Quiz[]> {
     return this.quizService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get quiz by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quiz retrieved successfully',
+    type: Quiz,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid quiz ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid quiz ID' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found - Quiz not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Quiz not found' },
+        statusCode: { type: 'number', example: 404 },
+      },
+    },
+  })
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
     return this.quizService.findOne(id);
   }
@@ -51,12 +116,53 @@ export class QuizController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete quiz by ID' })
+  @ApiResponse({ status: 204, description: 'Quiz deleted successfully' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid quiz ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid quiz ID' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Quiz not found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Quiz not found' },
+        statusCode: { type: 'number', example: 404 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.quizService.remove(id);
   }
 
   @Post('submit')
+  @ApiOperation({ summary: 'Submit quiz answers' })
+  @ApiResponse({
+    status: 200,
+    description: 'Quiz submitted successfully',
+    type: QuizResultDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid submission data',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid quiz submission' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   submitQuiz(@Body() submitQuizDto: SubmitQuizDto): Promise<QuizResultDto> {
     return this.quizService.submitQuiz(submitQuizDto);

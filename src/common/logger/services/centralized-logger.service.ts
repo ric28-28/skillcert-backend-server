@@ -11,8 +11,8 @@ export class CentralizedLoggerService implements ILoggerService {
   private logger: Logger;
   private context: string = 'Application';
 
-  constructor(context?: string) {
-    this.context = context || 'Application';
+  constructor() {
+    this.context = 'Application';
     this.logger = new Logger(this.context);
   }
 
@@ -180,7 +180,8 @@ export class CentralizedLoggerService implements ILoggerService {
    * Create a child logger with additional context
    */
   createChildLogger(context: string): CentralizedLoggerService {
-    const childLogger = new CentralizedLoggerService(context);
+    const childLogger = new CentralizedLoggerService();
+    childLogger.setContext(context);
     return childLogger;
   }
 

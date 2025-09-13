@@ -1,14 +1,42 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../common/decorators/roles.decorator';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 
 @Controller('public')
+@ApiTags('public')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class PublicController {
   @Get('info')
+  @ApiOperation({ summary: 'Get public application information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Public information retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: { message: { type: 'string' }, data: { type: 'object' } },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   getPublicInfo() {
     return {
