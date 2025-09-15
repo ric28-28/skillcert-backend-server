@@ -19,6 +19,8 @@ import { Reference } from '../entities/reference.entity';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
 import { UpdateReferenceDto } from './dto/update-reference.dto';
+import { Reference } from '../entities/reference.entity';
+import { ReferenceResponseDto } from './dto/reference-response.dto';
 import { ReferencesService } from './references.service';
 
 @Controller('references')
@@ -47,51 +49,17 @@ export class ReferencesController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createReferenceDto: CreateReferenceDto): Promise<Reference> {
+  create(@Body() createReferenceDto: CreateReferenceDto): Promise<ReferenceResponseDto> {
     return this.referencesService.create(createReferenceDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all references' })
-  @ApiResponse({
-    status: 200,
-    description: 'References retrieved successfully',
-    type: [Reference],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Invalid request' },
-        statusCode: { type: 'number', example: 400 },
-      },
-    },
-  })
-  findAll(): Promise<Reference[]> {
+  findAll(): Promise<ReferenceResponseDto[]> {
     return this.referencesService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get reference by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Reference retrieved successfully',
-    type: Reference,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Reference not found' },
-        statusCode: { type: 'number', example: 400 },
-      },
-    },
-  })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Reference> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ReferenceResponseDto> {
     return this.referencesService.findOne(id);
   }
 
@@ -115,7 +83,7 @@ export class ReferencesController {
   })
   findByModule(
     @Param('moduleId', ParseUUIDPipe) moduleId: string,
-  ): Promise<Reference[]> {
+  ): Promise<ReferenceResponseDto[]> {
     return this.referencesService.findByModule(moduleId);
   }
 
@@ -139,7 +107,7 @@ export class ReferencesController {
   })
   findByLesson(
     @Param('lessonId', ParseUUIDPipe) lessonId: string,
-  ): Promise<Reference[]> {
+  ): Promise<ReferenceResponseDto[]> {
     return this.referencesService.findByLesson(lessonId);
   }
 
@@ -167,7 +135,7 @@ export class ReferencesController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateReferenceDto: UpdateReferenceDto,
-  ): Promise<Reference> {
+  ): Promise<ReferenceResponseDto> {
     return this.referencesService.update(id, updateReferenceDto);
   }
 

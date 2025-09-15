@@ -1,3 +1,5 @@
+import { Course } from "../../courses/entities/course.entity"
+export { UserRole } from '../enums/user-role.enum';
 import { Review } from 'src/reviews/entities/reviews.entity';
 import {
   Column,
@@ -11,11 +13,6 @@ import { Course } from '../../courses/entities/course.entity';
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { COLUMN_LENGTHS } from '../../common/constants';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
-  MODERATOR = 'moderator',
-}
 
 @Entity('users')
 export class User {

@@ -20,6 +20,7 @@ import { QuizResultDto } from './dto/quiz-result.dto';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
+import { QuizResponseDto } from './dto/quiz-response.dto';
 import { QuizService } from './quiz.service';
 
 @Controller('quizzes')
@@ -49,69 +50,24 @@ export class QuizController {
     },
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createQuizDto: CreateQuizDto): Promise<Quiz> {
+  create(@Body() createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     return this.quizService.create(createQuizDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all quizzes' })
-  @ApiResponse({
-    status: 200,
-    description: 'Quizzes retrieved successfully',
-    type: [Quiz],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Invalid request' },
-        statusCode: { type: 'number', example: 400 },
-      },
-    },
-  })
-  findAll(): Promise<Quiz[]> {
+  findAll(): Promise<QuizResponseDto[]> {
     return this.quizService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get quiz by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Quiz retrieved successfully',
-    type: Quiz,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request - Invalid quiz ID',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Invalid quiz ID' },
-        statusCode: { type: 'number', example: 400 },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not found - Quiz not found',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Quiz not found' },
-        statusCode: { type: 'number', example: 404 },
-      },
-    },
-  })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<QuizResponseDto> {
     return this.quizService.findOne(id);
   }
 
   @Get('lesson/:lessonId')
   findByLesson(
     @Param('lessonId', ParseUUIDPipe) lessonId: string,
-  ): Promise<Quiz[]> {
+  ): Promise<QuizResponseDto[]> {
     return this.quizService.findByLesson(lessonId);
   }
 

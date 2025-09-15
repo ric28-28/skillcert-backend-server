@@ -18,6 +18,7 @@ import { AttemptStatus, QuizAttempt } from './entities/quiz-attempt.entity';
 import { Quiz } from './entities/quiz.entity';
 import { UserQuestionResponse } from './entities/user-question-response.entity';
 import { QuizValidationService } from './services/quiz-validation.service';
+import { QuizResponseDto } from './dto/quiz-response.dto';
 
 @Injectable()
 export class QuizService {
@@ -41,13 +42,32 @@ export class QuizService {
     this.logger.setContext(QuizService.name);
   }
 
-  async create(createQuizDto: CreateQuizDto): Promise<Quiz> {
-    this.logger.info('Creating new quiz', {
-      title: createQuizDto.title,
-      lessonId: createQuizDto.lesson_id,
-      questionCount: createQuizDto.questions?.length || 0,
-    });
+  private toResponseDto(quiz: Quiz): QuizResponseDto {
+    return {
+      id: quiz.id,
+      title: quiz.title,
+      description: quiz.description,
+      lesson_id: quiz.lesson_id,
+      questions: quiz.questions?.map((q) => ({
+        id: q.id,
+        text: q.text,
+        type: q.type,
+        answers: q.answers?.map((a) => ({
+          id: a.id,
+          text: a.text,
+          correct: a.correct,
+          created_at: a.created_at,
+          updated_at: a.updated_at,
+        })) || [],
+        created_at: q.created_at,
+        updated_at: q.updated_at,
+      })) || [],
+      created_at: quiz.created_at,
+      updated_at: quiz.updated_at,
+    };
+  }
 
+  async create(createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     // Validate the quiz structure
     this.quizValidationService.validateQuiz(createQuizDto);
 
@@ -86,7 +106,7 @@ export class QuizService {
     return this.findOne(savedQuiz.id);
   }
 
-  async findAll(): Promise<Quiz[]> {
+  async findAll(): Promise<QuizResponseDto[]> {
     return await this.quizRepository.find({
       relations: ['lesson', 'questions', 'questions.answers'],
       order: {
@@ -98,7 +118,7 @@ export class QuizService {
     });
   }
 
-  async findOne(id: string): Promise<Quiz> {
+  async findOne(id: string): Promise<QuizResponseDto> {
     const quiz = await this.quizRepository.findOne({
       where: { id },
       relations: ['lesson', 'questions', 'questions.answers'],
@@ -116,7 +136,7 @@ export class QuizService {
     return quiz;
   }
 
-  async findByLesson(lessonId: string): Promise<Quiz[]> {
+  async findByLesson(lessonId: string): Promise<QuizResponseDto[]> {
     return await this.quizRepository.find({
       where: { lesson_id: lessonId },
       relations: ['questions', 'questions.answers'],

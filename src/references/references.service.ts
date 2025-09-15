@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Reference } from '../entities/reference.entity';
 import { CreateReferenceDto } from './dto/create-reference.dto';
 import { UpdateReferenceDto } from './dto/update-reference.dto';
+import { ReferenceResponseDto } from './dto/reference-response.dto';
 
 @Injectable()
 export class ReferencesService {
@@ -12,18 +13,51 @@ export class ReferencesService {
     private referencesRepository: Repository<Reference>,
   ) {}
 
-  async create(createReferenceDto: CreateReferenceDto): Promise<Reference> {
+  private toResponseDto(reference: Reference): ReferenceResponseDto {
+    return {
+      id: reference.id,
+      title: reference.title,
+      file_url: reference.file_url,
+      type: reference.type,
+      module: reference.module
+        ? {
+            id: reference.module.id,
+            title: reference.module.title,
+            description: reference.module.description,
+            createdAt: reference.module.created_at,
+            updatedAt: reference.module.updated_at,
+          }
+        : undefined,
+      lesson: reference.lesson
+        ? {
+            id: reference.lesson.id,
+            title: reference.lesson.title,
+            content: reference.lesson.content,
+            type: reference.lesson.type,
+            createdAt: reference.lesson.created_at,
+            updatedAt: reference.lesson.updated_at,
+          }
+        : undefined,
+      createdAt: reference.created_at,
+      updatedAt: reference.updated_at,
+    };
+  }
+
+
+  async create(createReferenceDto: CreateReferenceDto): Promise<ReferenceResponseDto> {
     const reference = this.referencesRepository.create(createReferenceDto);
-    return await this.referencesRepository.save(reference);
+    const saved = await this.referencesRepository.save(reference);
+    return this.toResponseDto(saved);
   }
 
-  async findAll(): Promise<Reference[]> {
-    return await this.referencesRepository.find({
-      relations: ['module', 'lesson'],
-    });
+  async findAll(): Promise<ReferenceResponseDto[]> {
+    const references = await this.referencesRepository.find({
+    relations: ['module', 'lesson'],
+  });
+  return references.map(this.toResponseDto);
   }
 
-  async findOne(id: string): Promise<Reference> {
+  async findOne(id: string): Promise<ReferenceResponseDto> {
     const reference = await this.referencesRepository.findOne({
       where: { id },
       relations: ['module', 'lesson'],
@@ -33,27 +67,29 @@ export class ReferencesService {
       throw new NotFoundException(`Reference with ID ${id} not found`);
     }
 
-    return reference;
+    return this.toResponseDto(reference);
   }
 
-  async findByModule(moduleId: string): Promise<Reference[]> {
-    return await this.referencesRepository.find({
+  async findByModule(moduleId: string): Promise<ReferenceResponseDto[]> {
+    const references = await this.referencesRepository.find({
       where: { module_id: moduleId },
       relations: ['module', 'lesson'],
     });
+    return references.map(ref => this.toResponseDto(ref));
   }
 
-  async findByLesson(lessonId: string): Promise<Reference[]> {
-    return await this.referencesRepository.find({
+  async findByLesson(lessonId: string): Promise<ReferenceResponseDto[]> {
+    const references = await this.referencesRepository.find({
       where: { lesson_id: lessonId },
       relations: ['module', 'lesson'],
     });
-  }
-
+    return references.map(ref => this.toResponseDto(ref));
+  } 
+  
   async update(
     id: string,
     updateReferenceDto: UpdateReferenceDto,
-  ): Promise<Reference> {
+  ): Promise<ReferenceResponseDto> {
     const reference = await this.findOne(id);
     Object.assign(reference, updateReferenceDto);
     return await this.referencesRepository.save(reference);

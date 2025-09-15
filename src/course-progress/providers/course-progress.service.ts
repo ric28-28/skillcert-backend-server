@@ -6,6 +6,7 @@ import { Lesson } from '../../lessons/entities/lesson.entity';
 import { Quiz } from '../../quiz/entities/quiz.entity';
 import { QuizAttempt } from '../../quiz/entities/quiz-attempt.entity';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
+import { CourseProgressResponseDto, CompletionRateResponseDto, AnalyticsResponseDto } from '../dto/course-progress.dto';
 import {
   CourseProgress,
   ProgressStatus,
@@ -26,8 +27,18 @@ export class CourseProgressService {
     @InjectRepository(QuizAttempt)
     private quizAttemptRepo: Repository<QuizAttempt>,
   ) { }
+  
+  private toResponseDto(progress: CourseProgress): CourseProgressResponseDto {
+    return {
+      enrollmentId: progress.enrollment.id,
+      lessonId: progress.lesson.id,
+      status: progress.status,
+      lessonTitle: progress.lesson?.title,
+    };
+  }
 
-  async updateProgress(dto: UpdateProgressDto) {
+
+  async updateProgress(dto: UpdateProgressDto):Promise<CourseProgressResponseDto> {
     const enrollment = await this.enrollmentRepo.findOne({
       where: { id: dto.enrollmentId },
       relations: ['user'],
@@ -61,10 +72,9 @@ export class CourseProgressService {
     } else {
       progress.status = dto.status;
     }
-
-    return this.progressRepo.save(progress);
+    const saved = await this.progressRepo.save(progress);
+    return this.toResponseDto(saved);
   }
-
   private async checkQuizRequirements(userId: string, lessonId: string): Promise<void> {
     // Find all quizzes for this lesson
     const quizzes = await this.quizRepo.find({
@@ -93,20 +103,21 @@ export class CourseProgressService {
     }
   }
 
-  async getProgress(enrollmentId: string) {
-    return this.progressRepo.find({
+  async getProgress(enrollmentId: string):Promise<CourseProgressResponseDto[]> {
+    const progress = await this.progressRepo.find({
       where: { enrollment: { id: enrollmentId } },
-      relations: ['lesson'],
+      relations: ['lesson', 'enrollment'],
     });
+    return progress.map(this.toResponseDto);
   }
 
-  async getCompletionRate(enrollmentId: string) {
+  async getCompletionRate(enrollmentId: string): Promise<CompletionRateResponseDto> {
     const total = await this.progressRepo.count({
       where: { enrollment: { id: enrollmentId } },
     });
 
     if (total === 0) {
-      return { completionRate: 0 };
+      return { enrollmentId, completed: 0, total: 0, completionRate: 0 };
     }
 
     const completed = await this.progressRepo.count({
@@ -122,16 +133,14 @@ export class CourseProgressService {
       enrollmentId,
       completed,
       total,
-      completionRate: Math.round(completionRate),
+      completionRate: Math.round((completed / total) * 100),
     };
   }
 
-  // course-progress.service.ts
-  async getAnalytics() {
+  async getAnalytics(): Promise<AnalyticsResponseDto> {
     const totalProgress = await this.progressRepo.count();
-    const completed = await this.progressRepo.count({
-      where: { status: ProgressStatus.COMPLETED },
-    });
+    const completed = await this.progressRepo.count({ where: { status: ProgressStatus.COMPLETED } });
+
 
     return {
       totalProgress,

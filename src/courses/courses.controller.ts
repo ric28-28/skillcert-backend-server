@@ -18,6 +18,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
+import { CourseResponseDto } from './dto/course-response.dto';
 
 @Controller('courses')
 @ApiTags('courses')
@@ -99,7 +100,7 @@ export class CoursesController {
     },
   })
   @HttpCode(HttpStatus.OK)
-  findAll(): Promise<Course[]> {
+  findAll(): Promise<CourseResponseDto[]> {
     return this.coursesService.findAll();
   }
 
@@ -136,7 +137,7 @@ export class CoursesController {
     },
   })
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Course> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CourseResponseDto> {
     return this.coursesService.findOne(id);
   }
 
@@ -179,7 +180,7 @@ export class CoursesController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCourseDto: { title?: string; description?: string },
-  ): Promise<Course> {
+  ): Promise<CourseResponseDto> {
     return this.coursesService.update(id, updateCourseDto);
   }
 

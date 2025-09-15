@@ -2,9 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
+import { EnrollmentResponseDto ,UserEnrollmentsResponseDto} from '../dto/enrollment-response.dto';
 import { User } from '../../users/entities/user.entity';
 import { CreateEnrollmentDto } from '../dto/create-enrollment.dto';
 import { Enrollment } from '../entities/enrollment.entity';
+
 
 @Injectable()
 export class EnrollmentService {
@@ -17,7 +19,18 @@ export class EnrollmentService {
     private readonly courseRepo: Repository<Course>,
   ) {}
 
-  async enroll(dto: CreateEnrollmentDto): Promise<Enrollment> {
+  private toResponseDto(enrollment: Enrollment): EnrollmentResponseDto {
+    return {
+      id: enrollment.id,
+      userId: enrollment.user.id,
+      courseId: enrollment.course.id,
+      courseTitle: enrollment.course?.title,
+      enrolledAt: enrollment.enrolledAt,
+      isActive: enrollment.isActive,
+    };
+  }
+
+  async enroll(dto: CreateEnrollmentDto): Promise<EnrollmentResponseDto> {
     const user = await this.userRepo.findOne({ where: { id: dto.userId } });
     const course = await this.courseRepo.findOne({
       where: { id: dto.courseId },
@@ -27,17 +40,35 @@ export class EnrollmentService {
     if (!course) throw new NotFoundException('Course not found');
 
     const enrollment = this.enrollmentRepo.create({ user, course });
-    return this.enrollmentRepo.save(enrollment);
-  }
+    const saved = await this.enrollmentRepo.save(enrollment);
 
-  async getUserEnrollments(userId: string): Promise<Enrollment[]> {
-    return this.enrollmentRepo.find({
-      where: { user: { id: userId } },
-      relations: ['course'],
+    // reload with relations so DTO has course/user
+    const full = await this.enrollmentRepo.findOne({
+      where: { id: saved.id },
+      relations: ['user', 'course'],
     });
+    if (!full) {
+      throw new NotFoundException(`Enrollment with id ${saved.id} not found`);
+    }
+
+    return this.toResponseDto(full);
   }
 
-  async removeEnrollment(enrollmentId: string): Promise<void> {
-    await this.enrollmentRepo.delete(enrollmentId);
+  async getUserEnrollments(userId: string): Promise<UserEnrollmentsResponseDto> {
+    const enrollments = await this.enrollmentRepo.find({
+      where: { user: { id: userId } },
+      relations: ['course', 'user'],
+    });
+
+    return {
+      userId,
+      enrollments: enrollments.map(this.toResponseDto),
+    };
   }
+
+  async removeEnrollment(enrollmentId: string): Promise<{ message: string }> {
+    await this.enrollmentRepo.delete(enrollmentId);
+    return { message: `Enrollment ${enrollmentId} removed successfully` };
+  }
+
 }

@@ -9,14 +9,16 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
+  UsePipes, 
   ValidationPipe,
-} from '@nestjs/common';
+} from "@nestjs/common"
+import type { User } from "../entities/user.entity"
+import { UsersService } from "../providers/users.service";
+import { CreateUserDto } from "../dto/create-user.dto";
+import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserResponseDto } from "../dto/user-response.dto";
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import type { User } from '../entities/user.entity';
-import { UsersService } from '../providers/users.service';
+
 
 @Controller('users')
 @ApiTags('users')
@@ -48,7 +50,7 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto): Promise<{
     message: string;
-    data: User;
+    data: UserResponseDto;
   }> {
     const user = await this.usersService.create(createUserDto);
     return {
@@ -82,16 +84,12 @@ export class UsersController {
       },
     },
   })
+  
   @HttpCode(HttpStatus.OK)
-  async findAll(
-    @Query('page') page = '1',
-    @Query('limit') limit = '10',
-  ): Promise<{
-    message: string;
-    data: User[];
-    total: number;
-    page: number;
-    limit: number;
+  async findAll(): Promise<{
+    message: string
+    data: UserResponseDto[]
+    count: number
   }> {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
@@ -131,7 +129,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string): Promise<{
     message: string;
-    data: User;
+    data: UserResponseDto;
   }> {
     const user = await this.usersService.findById(id);
     return {
@@ -169,8 +167,8 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<{
-    message: string;
-    data: User;
+    message: string
+    data: UserResponseDto
   }> {
     const user = await this.usersService.update(id, updateUserDto);
     return {

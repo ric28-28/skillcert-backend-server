@@ -1,21 +1,33 @@
+import type { User } from "../entities/user.entity"
+import * as bcrypt from "bcrypt"
+import { CreateUserDto } from "../dto/create-user.dto"
+import { UsersRepository } from "../users.repository"
+import { UpdateUserDto } from "../dto/update-user.dto"
+import { UserResponseDto } from "../dto/user-response.dto"
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import type { User } from '../entities/user.entity';
-import { UsersRepository } from '../users.repository';
 import { PASSWORD_SALT_ROUNDS } from '../../common/constants';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  private toResponseDto(user: User): UserResponseDto {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if email already exists
     const emailExists = await this.usersRepository.emailExists(
       createUserDto.email,
@@ -34,15 +46,16 @@ export class UsersService {
       ...createUserDto,
       password: hashedPassword,
     };
-
-    return await this.usersRepository.create(userWithHashedPassword);
+    const saved = await this.usersRepository.create(userWithHashedPassword);
+    return this.toResponseDto(saved);
   }
 
-  async findAll(page?: number, limit?: number): Promise<{ users: User[]; total: number }> {
-    return await this.usersRepository.findAll(page, limit);
+  async findAll(): Promise<UserResponseDto[]> {
+    const users = await this.usersRepository.findAll();
+    return users.map((u) => this.toResponseDto(u));
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<UserResponseDto> {
     if (!id) {
       throw new BadRequestException('User ID is required');
     }
@@ -52,10 +65,10 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    return user;
+    return this.toResponseDto(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     if (!id) {
       throw new BadRequestException('User ID is required');
     }
@@ -89,8 +102,7 @@ export class UsersService {
     if (!updatedUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-
-    return updatedUser;
+    return this.toResponseDto(updatedUser);
   }
 
   async delete(id: string): Promise<void> {
