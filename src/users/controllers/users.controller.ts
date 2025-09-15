@@ -15,6 +15,7 @@ import type { User } from "../entities/user.entity"
 import { UsersService } from "../providers/users.service";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserResponseDto } from "../dto/user-response.dto";
 
 @Controller("users")
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -25,7 +26,7 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto): Promise<{
     message: string;
-    data: User;
+    data: UserResponseDto;
   }> {
     const user = await this.usersService.create(createUserDto);
     return {
@@ -38,7 +39,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<{
     message: string
-    data: User[]
+    data: UserResponseDto[]
     count: number
   }> {
     const users = await this.usersService.findAll()
@@ -53,7 +54,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string): Promise<{
     message: string;
-    data: User;
+    data: UserResponseDto;
   }> {
     const user = await this.usersService.findById(id);
     return {
@@ -69,7 +70,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<{
     message: string
-    data: User
+    data: UserResponseDto
   }> {
     const user = await this.usersService.update(id, updateUserDto)
     return {

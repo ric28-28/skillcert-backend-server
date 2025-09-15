@@ -12,28 +12,29 @@ import { ModulesService } from './modules.service';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { Module } from './entities/module.entity';
+import { ModuleResponseDto } from './dto/module-response.dto';
 
 @Controller('modules')
 export class ModulesController {
   constructor(private readonly modulesService: ModulesService) {}
 
   @Post()
-  async create(@Body() createModuleDto: CreateModuleDto): Promise<Module> {
+  async create(@Body() createModuleDto: CreateModuleDto): Promise<ModuleResponseDto> {
     return await this.modulesService.create(createModuleDto);
   }
 
   @Get()
-  async findAll(): Promise<Module[]> {
+  async findAll(): Promise<ModuleResponseDto[]> {
     return await this.modulesService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Module> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ModuleResponseDto> {
     return await this.modulesService.findOne(id);
   }
 
   @Get('course/:courseId')
-  async findByCourseId(@Param('courseId', ParseUUIDPipe) courseId: string): Promise<Module[]> {
+  async findByCourseId(@Param('courseId', ParseUUIDPipe) courseId: string): Promise<ModuleResponseDto[]> {
     return this.modulesService.findByCourseId(courseId);
   }
 
@@ -41,7 +42,7 @@ export class ModulesController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateModuleDto: UpdateModuleDto,
-  ): Promise<Module> {
+  ): Promise<ModuleResponseDto> {
     return await this.modulesService.update(id, updateModuleDto);
   }
 

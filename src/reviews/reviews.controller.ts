@@ -13,6 +13,7 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { Review } from './entities/reviews.entity';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewResponseDto } from './dto/review-response.dto';
 
 // TODO This field ne eds to be removed after the login integration process
 const SAMPLE_USER_ID: string = 'DJKF392GKK';
@@ -26,7 +27,7 @@ export class ReviewsController {
   create(
     @Param('courseId') courseId: string,
     @Body() createReviewDto: CreateReviewDto,
-  ): Promise<Review> {
+  ): Promise<ReviewResponseDto> {
     return this.reviewsService.createReview(
       SAMPLE_USER_ID,
       courseId,
@@ -36,13 +37,13 @@ export class ReviewsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(@Param('courseId') courseId: string): Promise<Review[]> {
+  findAll(@Param('courseId') courseId: string): Promise<ReviewResponseDto[]> {
     return this.reviewsService.findCourseReviews(courseId);
   }
 
   @Get('/me')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('courseId') courseId: string): Promise<Review> {
+  findOne(@Param('courseId') courseId: string): Promise<ReviewResponseDto> {
     return this.reviewsService.findCourseMyReview(SAMPLE_USER_ID, courseId);
   }
 
@@ -51,7 +52,7 @@ export class ReviewsController {
   update(
     @Param('courseId') courseId: string,
     @Body() updateDto: UpdateReviewDto,
-  ): Promise<Review> {
+  ): Promise<ReviewResponseDto> {
     return this.reviewsService.updateReview(
       SAMPLE_USER_ID,
       courseId,

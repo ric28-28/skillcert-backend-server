@@ -22,6 +22,7 @@ import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
+import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
 
 @Controller('lesson-resources')
 export class LessonResourcesController {
@@ -37,7 +38,7 @@ export class LessonResourcesController {
     @Body() fileUploadDto: CreateLessonResourceDto,
   ): Promise<{
     message: string;
-    data: LessonResource;
+    data: LessonResourceResponseDto;
   }> {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -58,10 +59,10 @@ export class LessonResourcesController {
   @HttpCode(HttpStatus.OK)
   async findAll(@Query('type') type?: ResourceType): Promise<{
     message: string;
-    data: LessonResource[];
+    data: LessonResourceResponseDto[];
     count: number;
   }> {
-    let resources: LessonResource[];
+    let resources: LessonResourceResponseDto[];
 
     if (type) {
       resources = await this.lessonResourcesService.findByResourceType(type);
@@ -82,7 +83,7 @@ export class LessonResourcesController {
     @Param('lessonId', ParseUUIDPipe) lessonId: string,
   ): Promise<{
     message: string;
-    data: LessonResource[];
+    data: LessonResourceResponseDto[];
     count: number;
   }> {
     const resources = await this.lessonResourcesService.findByLesson(lessonId);
@@ -98,7 +99,7 @@ export class LessonResourcesController {
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<{
     message: string;
-    data: LessonResource;
+    data: LessonResourceResponseDto;
   }> {
     const resource = await this.lessonResourcesService.findOne(id);
 
@@ -115,7 +116,7 @@ export class LessonResourcesController {
     @Body() updateLessonResourceDto: UpdateLessonResourceDto,
   ): Promise<{
     message: string;
-    data: LessonResource;
+    data: LessonResourceResponseDto;
   }> {
     const resource = await this.lessonResourcesService.update(
       id,

@@ -12,6 +12,7 @@ import {
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { Quiz } from './entities/quiz.entity';
+import { QuizResponseDto } from './dto/quiz-response.dto';
 
 @Controller('quizzes')
 export class QuizController {
@@ -19,24 +20,24 @@ export class QuizController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createQuizDto: CreateQuizDto): Promise<Quiz> {
+  create(@Body() createQuizDto: CreateQuizDto): Promise<QuizResponseDto> {
     return this.quizService.create(createQuizDto);
   }
 
   @Get()
-  findAll(): Promise<Quiz[]> {
+  findAll(): Promise<QuizResponseDto[]> {
     return this.quizService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<QuizResponseDto> {
     return this.quizService.findOne(id);
   }
 
   @Get('lesson/:lessonId')
   findByLesson(
     @Param('lessonId', ParseUUIDPipe) lessonId: string,
-  ): Promise<Quiz[]> {
+  ): Promise<QuizResponseDto[]> {
     return this.quizService.findByLesson(lessonId);
   }
 

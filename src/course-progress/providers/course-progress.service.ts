@@ -5,6 +5,7 @@ import { CourseProgress, ProgressStatus } from '../entities/course-progress.enti
 import { Enrollment } from '../../enrollment/entities/enrollment.entity';
 import { Lesson } from '../../lessons/entities/lesson.entity';
 import { UpdateProgressDto } from '../dto/update-course-progress.dto';
+import { CourseProgressResponseDto, CompletionRateResponseDto, AnalyticsResponseDto } from '../dto/course-progress.dto';
 
 @Injectable()
 export class CourseProgressService {
@@ -17,7 +18,17 @@ export class CourseProgressService {
     private lessonRepo: Repository<Lesson>,
   ) {}
 
-  async updateProgress(dto: UpdateProgressDto) {
+  private toResponseDto(progress: CourseProgress): CourseProgressResponseDto {
+    return {
+      enrollmentId: progress.enrollment.id,
+      lessonId: progress.lesson.id,
+      status: progress.status,
+      lessonTitle: progress.lesson?.title,
+    };
+  }
+
+
+  async updateProgress(dto: UpdateProgressDto):Promise<CourseProgressResponseDto> {
     const enrollment = await this.enrollmentRepo.findOne({ where: { id: dto.enrollmentId } });
     if (!enrollment) throw new NotFoundException('Enrollment not found');
 
@@ -38,56 +49,46 @@ export class CourseProgressService {
     } else {
       progress.status = dto.status;
     }
-
-    return this.progressRepo.save(progress);
+    const saved = await this.progressRepo.save(progress);
+    return this.toResponseDto(saved);
   }
 
-  async getProgress(enrollmentId: string) {
-    return this.progressRepo.find({
+  async getProgress(enrollmentId: string): Promise<CourseProgressResponseDto[]> {
+    const progress = await this.progressRepo.find({
       where: { enrollment: { id: enrollmentId } },
-      relations: ['lesson'],
+      relations: ['lesson', 'enrollment'],
     });
+    return progress.map(this.toResponseDto);
   }
 
-   async getCompletionRate(enrollmentId: string) {
-    const total = await this.progressRepo.count({
-      where: { enrollment: { id: enrollmentId } },
-    });
+  async getCompletionRate(enrollmentId: string): Promise<CompletionRateResponseDto> {
+    const total = await this.progressRepo.count({ where: { enrollment: { id: enrollmentId } } });
 
     if (total === 0) {
-      return { completionRate: 0 };
+      return { enrollmentId, completed: 0, total: 0, completionRate: 0 };
     }
 
     const completed = await this.progressRepo.count({
-      where: { 
-        enrollment: { id: enrollmentId },
-        status: ProgressStatus.COMPLETED,
-      },
+      where: { enrollment: { id: enrollmentId }, status: ProgressStatus.COMPLETED },
     });
 
-    const completionRate = (completed / total) * 100;
-
-    return { 
+    return {
       enrollmentId,
       completed,
       total,
-      completionRate: Math.round(completionRate),
+      completionRate: Math.round((completed / total) * 100),
     };
   }
 
-  // course-progress.service.ts
-async getAnalytics() {
-  const totalProgress = await this.progressRepo.count();
-  const completed = await this.progressRepo.count({
-    where: { status: ProgressStatus.COMPLETED  },
-  });
+  async getAnalytics(): Promise<AnalyticsResponseDto> {
+    const totalProgress = await this.progressRepo.count();
+    const completed = await this.progressRepo.count({ where: { status: ProgressStatus.COMPLETED } });
 
-  return {
-    totalProgress,
-    completed,
-    overallCompletionRate: totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
-  };
-}
-
+    return {
+      totalProgress,
+      completed,
+      overallCompletionRate: totalProgress > 0 ? (completed / totalProgress) * 100 : 0,
+    };
+  }
 
 }

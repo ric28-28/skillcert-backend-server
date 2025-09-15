@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { Course } from './entities/course.entity';
+import { CourseResponseDto } from './dto/course-response.dto';
 
 @Controller('courses')
 export class CoursesController {
@@ -27,13 +28,13 @@ export class CoursesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(): Promise<Course[]> {
+  findAll(): Promise<CourseResponseDto[]> {
     return this.coursesService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Course> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CourseResponseDto> {
     return this.coursesService.findOne(id);
   }
 
@@ -42,7 +43,7 @@ export class CoursesController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCourseDto: { title?: string; description?: string },
-  ): Promise<Course> {
+  ): Promise<CourseResponseDto> {
     return this.coursesService.update(id, updateCourseDto);
   }
 

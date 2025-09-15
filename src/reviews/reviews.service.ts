@@ -5,6 +5,7 @@ import { Review } from './entities/reviews.entity';
 import { CoursesRepository } from 'src/courses/courses.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewResponseDto } from './dto/review-response.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -14,11 +15,24 @@ export class ReviewsService {
     private readonly userRepository: UsersRepository,
   ) {}
 
+  private toResponseDto(review: Review): ReviewResponseDto {
+    return {
+      userId: review.userId,
+      courseId: review.courseId,
+      title: review.title,
+      content: review.content,
+      rating: review.rating,
+      createdAt: review.createdAt,
+      updatedAt: review.updatedAt,
+    };
+  }
+
+
   async createReview(
     userId: string,
     courseId: string,
     createDto: CreateReviewDto,
-  ): Promise<Review> {
+  ): Promise<ReviewResponseDto> {
     const review = await this.reviewsRepository.findById(courseId, userId);
     if (review) {
       throw new BadRequestException('Review already exists');
@@ -35,35 +49,38 @@ export class ReviewsService {
       createDto.content,
     );
 
-    return this.reviewsRepository.create(newReview);
+    const saved = await this.reviewsRepository.create(newReview);
+    return this.toResponseDto(saved);
   }
 
-  async findCourseReviews(courseId: string): Promise<Review[]> {
-    return this.reviewsRepository.findByCourseId(courseId);
+  async findCourseReviews(courseId: string): Promise<ReviewResponseDto[]> {
+    const reviews = await this.reviewsRepository.findByCourseId(courseId);
+    return reviews.map((r) => this.toResponseDto(r));
   }
 
-  async findCourseMyReview(userId: string, courseId: string): Promise<Review> {
-    return this.reviewsRepository.findByIdOrThrow(courseId, userId);
+  async findCourseMyReview(
+    userId: string,
+    courseId: string,
+  ): Promise<ReviewResponseDto> {
+    const review = await this.reviewsRepository.findByIdOrThrow(courseId, userId);
+    return this.toResponseDto(review);
   }
 
   async updateReview(
     userId: string,
     courseId: string,
     updateReviewDto: UpdateReviewDto,
-  ): Promise<Review> {
-    const review = await this.reviewsRepository.findByIdOrThrow(
-      courseId,
-      userId,
-    );
+  ): Promise<ReviewResponseDto> {
+    const review = await this.reviewsRepository.findByIdOrThrow(courseId, userId);
 
     review.update(
       updateReviewDto.rating,
       updateReviewDto.title,
       updateReviewDto.content,
     );
-    await this.reviewsRepository.update(courseId, userId, review);
 
-    return review;
+    await this.reviewsRepository.update(courseId, userId, review);
+    return this.toResponseDto(review);
   }
 
   async deleteReview(userId: string, courseId: string): Promise<void> {

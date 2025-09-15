@@ -2,12 +2,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Course } from "../../courses/entities/course.entity"
 import { Review } from "src/reviews/entities/reviews.entity"
 import { Enrollment } from "../../enrollment/entities/enrollment.entity"
+import { UserRole } from "../enums/user-role.enum"
+export { UserRole } from '../enums/user-role.enum';
 
-export enum UserRole {
-  ADMIN = "admin",
-  USER = "user",
-  MODERATOR = "moderator",
-}
+
 
 @Entity("users")
 export class User {
