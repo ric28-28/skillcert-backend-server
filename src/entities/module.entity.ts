@@ -1,15 +1,15 @@
+import { Course } from 'src/courses/entities/course.entity';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Lesson } from './lesson.entity';
-import { Course } from 'src/courses/entities/course.entity';
 
 @Entity('modules')
 export class Module {

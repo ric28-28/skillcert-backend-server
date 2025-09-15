@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Module } from './entities/module.entity';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { Module as ModuleEntity } from './entities/module.entity';
 import { ModuleResponseDto } from './dto/module-response.dto';
 import { LessonResponseDto } from '../lessons/dto/lesson-response.dto';
+import { Module } from './entities/module.entity';
 
 @Injectable()
 export class ModulesService {
@@ -57,7 +57,6 @@ export class ModulesService {
     if (!module) {
       throw new NotFoundException(`Module with ID ${id} not found`);
     }
-
     return this.toResponseDto(module);
   }
 

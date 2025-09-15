@@ -1,27 +1,61 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  HttpStatus,
-  HttpCode,
-  ValidationPipe,
   UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Category } from '../entities/category.entity';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from '../entities/category.entity';
 
 @Controller('categories')
+@ApiTags('categories')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new category' })
+  @ApiResponse({
+    status: 201,
+    description: 'Category created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category created successfully' },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'uuid' },
+            name: { type: 'string', example: 'Programming' },
+            description: { type: 'string', example: 'Programming courses' },
+            isActive: { type: 'boolean', example: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Validation failed' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createCategoryDto: CreateCategoryDto): Promise<{
     message: string;
@@ -35,6 +69,45 @@ export class CategoriesController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all categories' })
+  @ApiResponse({
+    status: 200,
+    description: 'Categories retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Categories retrieved successfully',
+        },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'uuid' },
+              name: { type: 'string', example: 'Programming' },
+              description: { type: 'string', example: 'Programming courses' },
+              isActive: { type: 'boolean', example: true },
+            },
+          },
+        },
+        count: { type: 'number', example: 5 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<{
     message: string;
@@ -50,6 +123,45 @@ export class CategoriesController {
   }
 
   @Get('active')
+  @ApiOperation({ summary: 'Get all active categories' })
+  @ApiResponse({
+    status: 200,
+    description: 'Active categories retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Active categories retrieved successfully',
+        },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'uuid' },
+              name: { type: 'string', example: 'Programming' },
+              description: { type: 'string', example: 'Programming courses' },
+              isActive: { type: 'boolean', example: true },
+            },
+          },
+        },
+        count: { type: 'number', example: 3 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Invalid request parameters' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async findActiveCategories(): Promise<{
     message: string;
@@ -65,6 +177,39 @@ export class CategoriesController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get category by ID' })
+  @ApiParam({ name: 'id', description: 'Category ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category retrieved successfully' },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'uuid' },
+            name: { type: 'string', example: 'Programming' },
+            description: { type: 'string', example: 'Programming courses' },
+            isActive: { type: 'boolean', example: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid category ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category not found' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string): Promise<{
     message: string;
@@ -78,6 +223,42 @@ export class CategoriesController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update category by ID' })
+  @ApiParam({ name: 'id', description: 'Category ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category updated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category updated successfully' },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'uuid' },
+            name: { type: 'string', example: 'Programming' },
+            description: { type: 'string', example: 'Programming courses' },
+            isActive: { type: 'boolean', example: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data or category ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Category not found or validation failed',
+        },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -94,6 +275,30 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete category by ID' })
+  @ApiParam({ name: 'id', description: 'Category ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category deleted successfully' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid category ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category not found' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async delete(@Param('id') id: string): Promise<{
     message: string;
@@ -105,6 +310,40 @@ export class CategoriesController {
   }
 
   @Get(':id/courses-count')
+  @ApiOperation({ summary: 'Get number of courses in category' })
+  @ApiParam({ name: 'id', description: 'Category ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category courses count retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Category courses count retrieved successfully',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            categoryId: { type: 'string', example: 'uuid' },
+            coursesCount: { type: 'number', example: 15 },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid category ID',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Category not found' },
+        error: { type: 'string', example: 'Bad Request' },
+        statusCode: { type: 'number', example: 400 },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async getCoursesCount(@Param('id') id: string): Promise<{
     message: string;

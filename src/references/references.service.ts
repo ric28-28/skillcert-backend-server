@@ -84,9 +84,12 @@ export class ReferencesService {
       relations: ['module', 'lesson'],
     });
     return references.map(ref => this.toResponseDto(ref));
-  }  
-
-  async update(id: string, updateReferenceDto: UpdateReferenceDto): Promise<ReferenceResponseDto> {
+  } 
+  
+  async update(
+    id: string,
+    updateReferenceDto: UpdateReferenceDto,
+  ): Promise<ReferenceResponseDto> {
     const reference = await this.findOne(id);
     Object.assign(reference, updateReferenceDto);
     return await this.referencesRepository.save(reference);

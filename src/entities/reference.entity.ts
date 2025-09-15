@@ -1,14 +1,14 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Module } from './module.entity';
 import { Lesson } from './lesson.entity';
+import { Module } from './module.entity';
 
 @Entity('references')
 export class Reference {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LocalFileStorageService } from './services/local-file-storage.service';
 import { LOCAL_FILE_STORAGE_SERVICE } from './constants';
+import { LocalFileStorageService } from './services/local-file-storage.service';
 
 @Module({
   providers: [

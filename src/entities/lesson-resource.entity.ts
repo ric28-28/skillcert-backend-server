@@ -1,13 +1,14 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Lesson } from './lesson.entity';
+import { COLUMN_LENGTHS } from '../common/constants';
 
 export enum ResourceType {
   DOCUMENT = 'document',
@@ -29,13 +30,13 @@ export class LessonResource {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.FILENAME })
   filename: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.ORIGINAL_NAME })
   original_name: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: COLUMN_LENGTHS.MIMETYPE })
   mimetype: string;
 
   @Column({ type: 'bigint' })

@@ -1,22 +1,22 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
   Inject,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
 import { Repository } from 'typeorm';
 import {
   LessonResource,
   ResourceType,
 } from '../entities/lesson-resource.entity';
-import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 import { FileStorageInterface } from '../storage/interfaces/file-storage.interface';
-import { LOCAL_FILE_STORAGE_SERVICE } from 'src/storage/constants';
-import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { CentralizedLoggerService } from '../common/logger/services/centralized-logger.service';
 import { LESSON_RESOURCES_PATH } from './constants';
 import { LessonResourceResponseDto } from './dto/lesson-resource-response.dto';
-
+import { CreateLessonResourceDto } from './dto/create-lesson-resource.dto';
+import { UpdateLessonResourceDto } from './dto/update-lesson-resource.dto';
 
 @Injectable()
 export class LessonResourcesService {
@@ -25,7 +25,11 @@ export class LessonResourcesService {
     private readonly lessonResourceRepository: Repository<LessonResource>,
     @Inject(LOCAL_FILE_STORAGE_SERVICE)
     private readonly fileStorageService: FileStorageInterface,
-  ) {}
+    @Inject(CentralizedLoggerService)
+    private readonly logger: CentralizedLoggerService,
+  ) {
+    this.logger.setContext(LessonResourcesService.name);
+  }
 
   private toResponseDto(resource: LessonResource): LessonResourceResponseDto {
     return {
@@ -68,12 +72,15 @@ export class LessonResourcesService {
   }
 
   async findOne(id: string): Promise<LessonResourceResponseDto> {
+    this.logger.debug(`Finding lesson resource by ID: ${id}`);
+    
     const lessonResource = await this.lessonResourceRepository.findOne({
       where: { id, is_active: true },
       relations: ['lesson'],
     });
 
     if (!lessonResource) {
+      this.logger.warn(`Lesson resource not found`, { resourceId: id });
       throw new NotFoundException(`Lesson resource with ID ${id} not found`);
     }
 
@@ -224,7 +231,15 @@ export class LessonResourcesService {
             ? error
             : 'Unknown error';
 
-      console.error(`Failed to delete file: ${msg}`);
+      this.logger.error(
+        `Failed to delete file during permanent delete of resource ${id}`,
+        error instanceof Error ? error : new Error(msg),
+        {
+          resourceId: id,
+          filename: lessonResource.filename,
+          operation: 'permanentDelete',
+        },
+      );
     }
 
     // Permanently delete the record

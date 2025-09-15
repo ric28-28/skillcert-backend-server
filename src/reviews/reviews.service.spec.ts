@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { ReviewsService } from './reviews.service';
-import { ReviewsRepository } from './reviews.repository';
+import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesRepository } from '../courses/courses.repository';
+import { Course } from '../courses/entities/course.entity';
+import { User } from '../users/entities/user.entity';
 import { UsersRepository } from '../users/users.repository';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/reviews.entity';
-import { User } from '../users/entities/user.entity';
-import { Course } from '../courses/entities/course.entity';
+import { ReviewsRepository } from './reviews.repository';
+import { ReviewsService } from './reviews.service';
 
 describe('ReviewsService', () => {
   let service: ReviewsService;

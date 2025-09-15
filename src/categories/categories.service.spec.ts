@@ -1,10 +1,14 @@
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CategoriesService } from './categories.service';
+import { Category } from '../entities/category.entity';
 import { CategoriesRepository } from './categories.repository';
+import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from '../entities/category.entity';
-import { ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('CategoriesService', () => {
   let service: CategoriesService;
@@ -80,7 +84,9 @@ describe('CategoriesService', () => {
 
       mockRepository.nameExists.mockResolvedValue(true);
 
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        ConflictException,
+      );
       expect(repository.nameExists).toHaveBeenCalledWith(createDto.name);
     });
   });
@@ -102,7 +108,9 @@ describe('CategoriesService', () => {
     it('should throw NotFoundException if category not found', async () => {
       mockRepository.findById.mockResolvedValue(null);
 
-      await expect(service.findById('test-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findById('test-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -114,26 +122,37 @@ describe('CategoriesService', () => {
 
       mockRepository.exists.mockResolvedValue(true);
       mockRepository.nameExists.mockResolvedValue(false);
-      mockRepository.update.mockResolvedValue({ ...mockCategory, ...updateDto });
+      mockRepository.update.mockResolvedValue({
+        ...mockCategory,
+        ...updateDto,
+      });
 
       const result = await service.update('test-id', updateDto);
 
       expect(repository.exists).toHaveBeenCalledWith('test-id');
-      expect(repository.nameExists).toHaveBeenCalledWith(updateDto.name, 'test-id');
+      expect(repository.nameExists).toHaveBeenCalledWith(
+        updateDto.name,
+        'test-id',
+      );
       expect(repository.update).toHaveBeenCalledWith('test-id', updateDto);
     });
 
     it('should throw NotFoundException if category not found', async () => {
       mockRepository.exists.mockResolvedValue(false);
 
-      await expect(service.update('test-id', { name: 'Test' })).rejects.toThrow(NotFoundException);
+      await expect(service.update('test-id', { name: 'Test' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete a category successfully', async () => {
       mockRepository.exists.mockResolvedValue(true);
-      mockRepository.findById.mockResolvedValue({ ...mockCategory, courses: [] });
+      mockRepository.findById.mockResolvedValue({
+        ...mockCategory,
+        courses: [],
+      });
       mockRepository.delete.mockResolvedValue(true);
 
       await service.delete('test-id');
@@ -145,9 +164,14 @@ describe('CategoriesService', () => {
 
     it('should throw BadRequestException if category has courses', async () => {
       mockRepository.exists.mockResolvedValue(true);
-      mockRepository.findById.mockResolvedValue({ ...mockCategory, courses: [{ id: 'course-1' }] });
+      mockRepository.findById.mockResolvedValue({
+        ...mockCategory,
+        courses: [{ id: 'course-1' }],
+      });
 
-      await expect(service.delete('test-id')).rejects.toThrow(BadRequestException);
+      await expect(service.delete('test-id')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });
