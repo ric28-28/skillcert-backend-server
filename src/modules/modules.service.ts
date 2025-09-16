@@ -7,6 +7,9 @@ import { Module as ModuleEntity } from './entities/module.entity';
 import { ModuleResponseDto } from './dto/module-response.dto';
 import { LessonResponseDto } from '../lessons/dto/lesson-response.dto';
 import { Module } from './entities/module.entity';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+
+import { PaginatedModuleResponseDto } from './dto/paginated-module-response.dto';
 
 @Injectable()
 export class ModulesService {
@@ -41,11 +44,27 @@ export class ModulesService {
     return this.toResponseDto(saved);
   }
 
-  async findAll(): Promise<ModuleResponseDto[]> {
-    const modules = await this.moduleRepository.find({
+  async findAll(pagination: PaginationQueryDto): Promise<PaginatedModuleResponseDto> {
+    const { page = 1, limit = 20 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [modules, total] = await this.moduleRepository.findAndCount({
       relations: ['course', 'lessons'],
+      skip,
+      take: limit,
+      order: { created_at: 'DESC' },
     });
-    return modules.map(this.toResponseDto);
+
+    const items = modules.map(this.toResponseDto);
+    return {
+      items,
+      meta: {
+        page,
+        limit,
+        total,
+        hasMore: skip + items.length < total,
+      },
+    };
   }
 
   async findOne(id: string): Promise<ModuleResponseDto> {
@@ -60,14 +79,31 @@ export class ModulesService {
     return this.toResponseDto(module);
   }
 
-  async findByCourseId(courseId: string): Promise<ModuleResponseDto[]> {
-    const modules = await this.moduleRepository.find({
+  async findByCourseId(
+    courseId: string,
+    pagination: PaginationQueryDto,
+  ): Promise<PaginatedModuleResponseDto> {
+    const { page = 1, limit = 20 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [modules, total] = await this.moduleRepository.findAndCount({
       where: { course_id: courseId },
       relations: ['lessons'],
       order: { created_at: 'ASC' },
+      skip,
+      take: limit,
     });
 
-    return modules.map(this.toResponseDto);
+    const items = modules.map(this.toResponseDto);
+    return {
+      items,
+      meta: {
+        page,
+        limit,
+        total,
+        hasMore: skip + items.length < total,
+      },
+    };
   }
 
   async update(id: string, updateModuleDto: UpdateModuleDto): Promise<ModuleResponseDto> {

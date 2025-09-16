@@ -1,4 +1,4 @@
-import { Course } from "../../courses/entities/course.entity"
+import { UserRole } from '../enums/user-role.enum';
 export { UserRole } from '../enums/user-role.enum';
 import { Review } from 'src/reviews/entities/reviews.entity';
 import {
