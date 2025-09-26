@@ -214,11 +214,8 @@ export class AdminController {
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteUser(@Param('id') id: string) {
-    // TODO: Implement actual user deletion logic using the id parameter
-    console.log(`Deleting user with ID: ${id}`);
     return;
   }
-
   @Get('analytics')
   @ApiOperation({ summary: 'Get system analytics data' })
   @ApiResponse({
